@@ -1,0 +1,34 @@
+# Model configuration section
+model:
+  # Number of attention heads
+  num_heads: 8
+  # Number of attention block "layers"
+  num_layers: 1
+  # Enables/disables bias on linear layers
+  bias: True
+  # Size of the input/output embedding dimension
+  emb_dim: 64
+  # Size of the MLP layer dimension
+  mlp_dim: 256
+  # Number of bits to use for quantized representation
+  bits: 2
+  # Number of classes at the classification head
+  num_classes: 24
+# Training hyperparameters
+train:
+  # Training/Validation dataset configuration
+  dataset:
+    # Path to the dataset file
+    path: ...
+  # Batch size for training
+  batch_size: 32
+  # Number of training epochs to run
+  epochs: 15
+  # Optimizer configuration
+  optimizer:
+    # Name of the optimization algorithm to use
+    algorithm: "adam"
+    # (Initial) Learning rate
+    lr: 0.005
+  # Loss function to use
+  criterion: "cross-entropy"
