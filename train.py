@@ -66,11 +66,11 @@ def train(
     train_data = DataLoader(train_data, batch_size=batch_size, **loader)
     valid_data = DataLoader(valid_data, batch_size=batch_size, **loader)
 
-    # Collect training and validation statistics in a dictionary
-    log = {"train": [], "valid": []}  # noqa: Shadows log from outer scope
+    # Collect training and validation loss in a dictionary
+    log = {"loss": []}  # noqa: Shadows log from outer scope
 
     # Run the configured number of training epochs
-    for _ in tqdm.trange(epochs, desc="epochs"):
+    for _ in tqdm.trange(epochs, desc="epoch"):
         # Collect training and validation loss per epoch
         train_loss, valid_loss = (0, 0)
         # Set model to training mode
@@ -90,8 +90,6 @@ def train(
             optimizer.step()
             # Accumulate the loss over the whole validation dataset
             train_loss += loss.item()
-        # Append loss information to the log
-        log["train"].append({"loss": train_loss})
         # Clear gradients of last iteration
         optimizer.zero_grad(set_to_none=True)
         # Switch the model to evaluation mode, disabling dropouts and scale
@@ -109,7 +107,7 @@ def train(
                 # Accumulate the loss over the whole validation dataset
                 valid_loss += loss.item()
         # Append loss information to the log
-        log["valid"].append({"loss": valid_loss})
+        log["loss"].append({"train": train_loss, "valid": valid_loss})
     # Clear the gradients of last iteration
     optimizer.zero_grad(set_to_none=True)
     # Return the model, the optimizer state and the log after training
@@ -134,7 +132,7 @@ if __name__ == "__main__":
     torch.save(model.state_dict(), "outputs/model.pt")
     # Save the optimizer state in PyTorch format
     torch.save(optimizer.state_dict(), "outputs/optimizer.pt")
-    # Save the training log as YAML
-    with open("outputs/log.yaml", "w") as file:
+    # Save the training loss log as YAML
+    with open("loss.yaml", "w") as file:
         # Dump the training log dictionary as YAML into the file
         yaml.safe_dump(log, file)

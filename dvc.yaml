@@ -1,0 +1,60 @@
+# List experiment stages, i.e., the jobs to be run
+stages:
+  # Stage running model training
+  train:
+    # Stage runs the training script as the command
+    cmd: python -m train
+    # Data dependencies of this stage to determine when it needs to be rerun
+    deps:
+      # The training and evaluation dataset
+      - ${dataset.path}
+      # The model, dataset and training python scripts
+      - model.py
+      - dataset.py
+      - train.py
+    # Parameters used by this stage, changing any of these triggers reruns
+    params:
+      # Track the model, dataset and training hyperparameter sections from the
+      # parameters file
+      - model
+      - dataset
+      - train
+    # Outputs produced which should be tracked and passed on to the next stages
+    outs:
+      # The trained model checkpoint
+      - outputs/model.pt
+      # The optimizer state after training
+      - outputs/optimizer.pt
+    # Plots produced by this stage
+    plots:
+      # Curves of training and validation loss per epoch
+      - loss.yaml:
+          # Track via git, not dvc cache
+          cache: false
+  # Stage running model evaluation after training to produce accuracy metrics
+  eval:
+    # Stage runs the evaluation script as the command
+    cmd: python -m eval
+    # Data dependencies of this stage to determine when it needs to be rerun
+    deps:
+      # The training and evaluation dataset
+      - ${dataset.path}
+      # The model checkpoint produced by the training stage
+      - outputs/model.pt
+      # The model, dataset and evaluation python scripts
+      - model.py
+      - dataset.py
+      - eval.py
+    # Parameters used by this stage, changing any of these triggers reruns
+    params:
+      # Track the model, dataset and eval hyperparameter sections from the
+      # parameters file
+      - model
+      - dataset
+      - eval
+    # Metrics produced by this stage
+    metrics:
+      # Classification accuracy over the evaluation dataset
+      - metrics.yaml:
+          # Track via git, not dvc cache
+          cache: false
