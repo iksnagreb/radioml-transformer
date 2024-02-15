@@ -258,7 +258,7 @@ class TransformerBlock(torch.nn.Module):
         return self.norm_mlp(self.residual_mlp(x, self.mlp(x)))
 
 
-# RadioML fingerprinting transformer encoder model
+# RadioML modulation classification transformer encoder model
 class RadioMLTransformer(torch.nn.Module):
     # Initializes the model and registers the module parameters
     def __init__(

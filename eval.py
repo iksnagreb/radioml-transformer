@@ -11,9 +11,9 @@ from torch.utils.data import DataLoader
 # Classification metrics
 from sklearn.metrics import accuracy_score
 
-# The RadioML fingerprinting transformer model
+# The RadioML modulation classification transformer model
 from model import RadioMLTransformer
-# The RadioML fingerprinting dataset
+# The RadioML modulation classification dataset
 from dataset import get_datasets
 
 
