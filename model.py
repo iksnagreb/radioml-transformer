@@ -110,7 +110,7 @@ class TransformerBlock(torch.nn.Module):
             # Insert an additional quantizer in front ot the softmax. In our
             # finn custom-op, this will be matched to the quantizer
             # following the query and key matmul.
-            softmax_input_quant=None,
+            softmax_input_quant=act_quantizer(bits, _signed=True),
             # Quantize the input projections weights as configured
             in_proj_weight_quant=weight_quantizer(bits, _signed=True),
             # Quantize the bias of the input projections as configured
@@ -319,7 +319,7 @@ class RadioMLTransformer(torch.nn.Module):
                 input_quant=act_quantizer(bits, _signed=True),
                 # Return the quantization parameters so the next layer can
                 # quantize the bias
-                return_quant_tensor=True
+                return_quant_tensor=False
             ),
             # # Softmax normalization to yield class probabilities
             # torch.nn.Softmax(dim=-1)

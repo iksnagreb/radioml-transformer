@@ -3,7 +3,7 @@ model:
   # Number of attention heads
   num_heads: 8
   # Number of attention block "layers"
-  num_layers: 1
+  num_layers: 2
   # Enables/disables bias on linear layers
   bias: True
   # Size of the input/output embedding dimension
@@ -11,7 +11,7 @@ model:
   # Size of the MLP layer dimension
   mlp_dim: 256
   # Number of bits to use for quantized representation
-  bits: 2
+  bits: 8
   # Number of classes at the classification head
   num_classes: 24
 # Training/Validation dataset configuration
@@ -21,7 +21,11 @@ dataset:
   # Optionally select only a subset of the classes
   #  classes: null
   # Optionally select only a subset of the available noise levels
-  #  signal_to_noise_ratios: null
+  signal_to_noise_ratios: [
+    # Noise levels from -6 dB upwards to 30 dB in steps of 2
+    #   !!python/object/apply:builtins.range [-6, 31, 2]
+    -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+  ]
   # Splits the dataset into train/validation/evaluation subsets
   splits: [ 0.70, 0.15, 0.15 ]  # 70%, 15%, 15% splits
   # Seed used for reproducible splitting of datasets
@@ -32,15 +36,15 @@ dataset:
 # Training hyperparameters
 train:
   # Batch size for training
-  batch_size: 2048
+  batch_size: 512
   # Number of training epochs to run
-  epochs: 3
+  epochs: 15
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
     algorithm: "adam"
     # (Initial) Learning rate
-    lr: 0.005
+    lr: 0.001
   # Loss function to use
   criterion: "cross-entropy"
   # DataLoader keyword arguments
@@ -55,3 +59,16 @@ train:
     persistent_workers: True
     # Drop the last batch if it is incomplete, i.e., smaller than the batch size
     drop_last: True
+# Evaluation hyperparameters
+eval:
+  # Evaluation batch size - does not influence the result, just speeds up the
+  # evaluation by doing more in parallel
+  batch_size: 4096
+  # DataLoader keyword arguments
+  loader:
+    # Number of workers to use for loading the data in parallel
+    num_workers: 10
+    # Number of batches loaded in advance by each worker
+    prefetch_factor: 4
+    # Do not drop the last batch if it is incomplete
+    drop_last: False
