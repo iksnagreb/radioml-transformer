@@ -14,16 +14,27 @@ model:
   bits: 2
   # Number of classes at the classification head
   num_classes: 24
+# Training/Validation dataset configuration
+dataset:
+  # Path to the dataset file
+  path: "data/GOLD_XYZ_OSC.0001_1024.hdf5"
+  # Optionally select only a subset of the classes
+  #  classes: null
+  # Optionally select only a subset of the available noise levels
+  #  signal_to_noise_ratios: null
+  # Splits the dataset into train/validation/evaluation subsets
+  splits: [ 0.70, 0.15, 0.15 ]  # 70%, 15%, 15% splits
+  # Seed used for reproducible splitting of datasets
+  seed: 12
+  # Reshape the dataset to fit the expected embedding dimension of the model
+  # and to effectively reduce the sequence length
+  reshape: [ -1, 64 ]  # -1 will infer the sequence length
 # Training hyperparameters
 train:
-  # Training/Validation dataset configuration
-  dataset:
-    # Path to the dataset file
-    path: ...
   # Batch size for training
-  batch_size: 32
+  batch_size: 2048
   # Number of training epochs to run
-  epochs: 15
+  epochs: 3
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
@@ -32,3 +43,15 @@ train:
     lr: 0.005
   # Loss function to use
   criterion: "cross-entropy"
+  # DataLoader keyword arguments
+  loader:
+    # Reshuffle data every epoch
+    shuffle: True
+    # Number of workers to use for loading the data in parallel
+    num_workers: 10
+    # Number of batches loaded in advance by each worker
+    prefetch_factor: 4
+    # Keep worker processes alive after consuming the dataset once
+    persistent_workers: True
+    # Drop the last batch if it is incomplete, i.e., smaller than the batch size
+    drop_last: True

@@ -1,12 +1,18 @@
+# System functionality like creating directories
+import os
 # YAML for loading experiment configurations
 import yaml
 # Progressbar in for loops
 import tqdm
 # PyTorch base package: Math and Tensor Stuff
 import torch
+# Loads shuffled batches from datasets
+from torch.utils.data import DataLoader
 
 # The RadioML fingerprinting transformer model
 from model import RadioMLTransformer
+# The RadioML fingerprinting dataset
+from dataset import get_datasets
 
 
 # Gets an optimizer instance according to configuration and register the model
@@ -37,7 +43,9 @@ def get_criterion(criterion, **kwargs):
 
 # Main training loop: Takes a model, loads the dataset and sets up the
 # optimizer. Runs the configured number of training epochs
-def train(model, dataset, batch_size, epochs, criterion, optimizer):  # noqa
+def train(
+        model, dataset, batch_size, epochs, criterion, optimizer, loader  # noqa
+):
     # Check whether GPU training is available and select the appropriate device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # Move the model to the training device
@@ -52,23 +60,24 @@ def train(model, dataset, batch_size, epochs, criterion, optimizer):  # noqa
     # Get the optimization criterion instance
     criterion = get_criterion(criterion)
 
-    # Dummy dataset
-    train_data = 100 * [
-        (torch.rand(batch_size, 32, 64), torch.randint(0, 14, (32,)))
-    ]
-    valid_data = train_data
+    # Load the RadioML dataset splits as configured
+    train_data, valid_data, _ = get_datasets(**dataset)
+    # Create a batched and shuffled data loader for each of the dataset splits
+    train_data = DataLoader(train_data, batch_size=batch_size, **loader)
+    valid_data = DataLoader(valid_data, batch_size=batch_size, **loader)
 
     # Collect training and validation statistics in a dictionary
     log = {"train": [], "valid": []}  # noqa: Shadows log from outer scope
 
     # Run the configured number of training epochs
-    for epoch in tqdm.trange(epochs, desc="epochs"):
+    for _ in tqdm.trange(epochs, desc="epochs"):
         # Collect training and validation loss per epoch
         train_loss, valid_loss = (0, 0)
         # Set model to training mode
         model = model.train()  # noqa: Shadows model...
         # Iterate the batches of (input, target labels) pairs
-        for x, y in train_data:
+        # Note: Ignore the signal-to-noise ratio, third in tuple
+        for x, y, _ in tqdm.tqdm(train_data, desc="train-batch", leave=False):
             # Clear gradients of last iteration
             optimizer.zero_grad(set_to_none=True)
             # Feed input data to model to get predictions
@@ -91,7 +100,8 @@ def train(model, dataset, batch_size, epochs, criterion, optimizer):  # noqa
         # Validation requires no gradients
         with torch.no_grad():
             # Iterate the batches of (input, target labels) pairs
-            for x, y in valid_data:
+            # Note: Ignore the signal-to-noise ratio, third in tuple
+            for x, y, _ in tqdm.tqdm(valid_data, "valid-batch", leave=False):
                 # Feed input data to model to get predictions
                 p = model(x.to(device))
                 # Loss between class probabilities and true class labels
@@ -115,12 +125,16 @@ if __name__ == "__main__":
     # Create a new model instance according to the configuration
     model = RadioMLTransformer(**params["model"])
     # Pass the model and the training configuration to the training loop
-    model, optimizer, log = train(model, **params["train"])
+    model, optimizer, log = train(
+        model, dataset=params["dataset"], **params["train"]
+    )
+    # Create the output directory if it does not already exist
+    os.makedirs("outputs/", exist_ok=True)
     # Save the model in PyTorch format
-    torch.save(model.state_dict(), "model.pt")
+    torch.save(model.state_dict(), "outputs/model.pt")
     # Save the optimizer state in PyTorch format
-    torch.save(optimizer.state_dict(), "optimizer.pt")
+    torch.save(optimizer.state_dict(), "outputs/optimizer.pt")
     # Save the training log as YAML
-    with open("log.yaml", "w") as file:
+    with open("outputs/log.yaml", "w") as file:
         # Dump the training log dictionary as YAML into the file
         yaml.safe_dump(log, file)
