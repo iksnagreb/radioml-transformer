@@ -13,8 +13,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: f696ded00d72e9aa1702d4c7e85dafb7
-      size: 16759
+      md5: 74794d046f9317fb1ecc229d7cb7727d
+      size: 17469
     - path: train.py
       hash: md5
       md5: 8bb93f204d9f6c0120c35f7a74fa6d87
@@ -77,15 +77,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 8af14a7eb126719665629725da411462
-      size: 546
+      md5: 67481c52ea8a01bb2525ae6854450ad6
+      size: 552
     - path: outputs/model.pt
       hash: md5
-      md5: d08b4cebeee31e8d7a7c34898df994d8
-      size: 550842
+      md5: 00783438ca41e33e8938a17067a428fd
+      size: 556478
     - path: outputs/optimizer.pt
       hash: md5
-      md5: b0d080804fe2f0f9f1620a5597dd1c34
+      md5: 9412fd11fc849cd0e2a6aa7d80c61873
       size: 860101
   eval:
     cmd: python -m eval
@@ -104,12 +104,12 @@ stages:
       size: 3159
     - path: model.py
       hash: md5
-      md5: f696ded00d72e9aa1702d4c7e85dafb7
-      size: 16759
+      md5: 74794d046f9317fb1ecc229d7cb7727d
+      size: 17469
     - path: outputs/model.pt
       hash: md5
-      md5: d08b4cebeee31e8d7a7c34898df994d8
-      size: 550842
+      md5: 00783438ca41e33e8938a17067a428fd
+      size: 556478
     params:
       params.yaml:
         dataset:
@@ -161,7 +161,7 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: 9877bea951d084059e00dcbf21dc98f7
+      md5: 648ad3139242bac9f6b727f71e131d61
       size: 29
   export:
     cmd: python -m export
@@ -180,12 +180,12 @@ stages:
       size: 2162
     - path: model.py
       hash: md5
-      md5: f696ded00d72e9aa1702d4c7e85dafb7
-      size: 16759
+      md5: 74794d046f9317fb1ecc229d7cb7727d
+      size: 17469
     - path: outputs/model.pt
       hash: md5
-      md5: d08b4cebeee31e8d7a7c34898df994d8
-      size: 550842
+      md5: 00783438ca41e33e8938a17067a428fd
+      size: 556478
     params:
       params.yaml:
         dataset:
@@ -238,9 +238,9 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 05d81bd4c54c1345d4eefb40a2ba24ef
-      size: 477389
+      md5: d5e7371079e91aee9e8c07bc10bac9c8
+      size: 475595
     - path: outputs/out.npy
       hash: md5
-      md5: 293ec78c6d2dac123984f91bd96f219e
+      md5: 5e5f31988a1c586fb50aa8c006bc6b2b
       size: 224

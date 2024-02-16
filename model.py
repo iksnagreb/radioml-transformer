@@ -87,6 +87,13 @@ class TransformerBlock(torch.nn.Module):
         # Initialize the PyTorch Module superclass
         super().__init__()
 
+        # Transposes Sequence and Embedding dimensions
+        class Transpose(torch.nn.Module):
+            # Forward pass transposing the feature map
+            def forward(self, x):  # noqa: May be static
+                # Transpose the last two dimensions of batch x seq x emb layout
+                return torch.transpose(x, dim0=-1, dim1=-2)
+
         # Quantized scaled dot-product attention operator
         self.sdp = QuantMultiheadAttention(
             # Size of the embedding dimension (input and output)
@@ -158,8 +165,12 @@ class TransformerBlock(torch.nn.Module):
         )
         # Normalization following the attention layer
         self.norm_sdp = torch.nn.Sequential(
-            # Vanilla PyTorch LayerNorm without quantization
-            torch.nn.LayerNorm(normalized_shape=emb_dim),
+            # Transpose to have emb x seg layout for batch normalization
+            Transpose(),
+            # Vanilla PyTorch batch normalization without quantization
+            torch.nn.LazyBatchNorm1d(),
+            # Transpose back have seq x emb layout for attention
+            Transpose(),
             # Quantize the LayerNorm outputs
             QuantIdentity(
                 # Quantize at the output
@@ -248,8 +259,12 @@ class TransformerBlock(torch.nn.Module):
         )
         # Normalization following the attention layer
         self.norm_mlp = torch.nn.Sequential(
-            # Vanilla PyTorch LayerNorm without quantization
-            torch.nn.LayerNorm(normalized_shape=emb_dim),
+            # Transpose to have emb x seg layout for batch normalization
+            Transpose(),
+            # Vanilla PyTorch batch normalization without quantization
+            torch.nn.LazyBatchNorm1d(),
+            # Transpose back have seq x emb layout for attention
+            Transpose(),
             # Quantize the LayerNorm outputs
             QuantIdentity(
                 # Quantize at the output
