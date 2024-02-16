@@ -80,19 +80,41 @@ def act_quantizer(bits, _signed=True):
     return Quantizer
 
 
+# Gets the normalization layer from configuration key
+def get_norm(key, normalized_shape):
+    # Transposes Sequence and Embedding dimensions
+    class Transpose(torch.nn.Module):
+        # Forward pass transposing the feature map
+        def forward(self, x):  # noqa: May be static
+            # Transpose the last two dimensions of batch x seq x emb layout
+            return torch.transpose(x, dim0=-1, dim1=-2)
+
+    # Dictionary mapping keys to supported normalization layer implementations
+    norms = {
+        # PyTorch default layer normalization. Needs to know the shape of the
+        # feature map to be normalized
+        "layer-norm": torch.nn.LayerNorm(normalized_shape=normalized_shape),
+        # PyTorch default 1-dimensional batch normalization. Needs to transpose
+        # embedding and sequence dimension to normalized over the embedding
+        # dimension, which is expected to be second.
+        "batch-norm": torch.nn.Sequential(
+            Transpose(), torch.nn.LazyBatchNorm1d(), Transpose()
+        ),
+        # No normalization by a PyTorch built-in identity layer. Should not
+        # appear in the graph.
+        "none": torch.nn.Identity()
+    }
+
+    # Select the normalization layer by key
+    return norms[key]
+
+
 # Single-layer scaled dot-product attention block with MLP and normalization
 class TransformerBlock(torch.nn.Module):
     # Initializes the model and registers the module parameters
-    def __init__(self, num_heads, emb_dim, mlp_dim, bias, bits):
+    def __init__(self, num_heads, emb_dim, mlp_dim, bias, norm, bits):
         # Initialize the PyTorch Module superclass
         super().__init__()
-
-        # Transposes Sequence and Embedding dimensions
-        class Transpose(torch.nn.Module):
-            # Forward pass transposing the feature map
-            def forward(self, x):  # noqa: May be static
-                # Transpose the last two dimensions of batch x seq x emb layout
-                return torch.transpose(x, dim0=-1, dim1=-2)
 
         # Quantized scaled dot-product attention operator
         self.sdp = QuantMultiheadAttention(
@@ -165,12 +187,8 @@ class TransformerBlock(torch.nn.Module):
         )
         # Normalization following the attention layer
         self.norm_sdp = torch.nn.Sequential(
-            # Transpose to have emb x seg layout for batch normalization
-            Transpose(),
-            # Vanilla PyTorch batch normalization without quantization
-            torch.nn.LazyBatchNorm1d(),
-            # Transpose back have seq x emb layout for attention
-            Transpose(),
+            # Select the normalization layer implementation
+            get_norm(key=norm, normalized_shape=emb_dim),
             # Quantize the LayerNorm outputs
             QuantIdentity(
                 # Quantize at the output
@@ -259,12 +277,8 @@ class TransformerBlock(torch.nn.Module):
         )
         # Normalization following the attention layer
         self.norm_mlp = torch.nn.Sequential(
-            # Transpose to have emb x seg layout for batch normalization
-            Transpose(),
-            # Vanilla PyTorch batch normalization without quantization
-            torch.nn.LazyBatchNorm1d(),
-            # Transpose back have seq x emb layout for attention
-            Transpose(),
+            # Select the normalization layer implementation
+            get_norm(key=norm, normalized_shape=emb_dim),
             # Quantize the LayerNorm outputs
             QuantIdentity(
                 # Quantize at the output
@@ -303,6 +317,9 @@ class RadioMLTransformer(torch.nn.Module):
             # Quantization bit-width: For now all layers are quantized to the
             # same bit-width
             bits,
+            # Type of normalization layer to use in the transformer blocks
+            #   Options are: layer-norm, batch-norm and none
+            norm="layer-norm",
             # Quantization bit-width at the model inputs: Typically this should
             # be higher than for most other layers, e.g., keep this at 8 bits
             input_bits=8,
@@ -325,7 +342,7 @@ class RadioMLTransformer(torch.nn.Module):
         # Sequence of num_layers transformer encoder blocks
         self.encoder = torch.nn.Sequential(*[
             TransformerBlock(
-                num_heads, emb_dim, mlp_dim, bias, bits
+                num_heads, emb_dim, mlp_dim, bias, norm, bits
             ) for _ in range(num_layers)
         ])
 

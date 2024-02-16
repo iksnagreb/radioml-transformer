@@ -10,6 +10,9 @@ model:
   emb_dim: 64
   # Size of the MLP layer dimension
   mlp_dim: 256
+  # Type of normalization layer to use in the transformer blocks
+  #   Options are: layer-norm, batch-norm and none
+  norm: "none"
   # Number of bits to use for quantized representation in "almost all layers"
   bits: 4
   # Quantization bit-width at the model inputs: Typically this should
