@@ -1,0 +1,12 @@
+dvc~=3.44.0
+PyYAML~=6.0.1
+tqdm~=4.66.2
+pandas~=2.2.0
+torch~=1.13.1
+scikit-learn~=1.4.0
+h5py~=3.10.0
+numpy~=1.26.4
+onnx~=1.15.0
+onnxoptimizer~=0.3.13
+onnxruntime~=1.17.0
+git+https://github.com/iksnagreb/brevitas.git@34c350afde0a69b7a39b13eb4748b979bdae1eff
