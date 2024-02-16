@@ -112,7 +112,7 @@ def get_norm(key, normalized_shape):
 # Single-layer scaled dot-product attention block with MLP and normalization
 class TransformerBlock(torch.nn.Module):
     # Initializes the model and registers the module parameters
-    def __init__(self, num_heads, emb_dim, mlp_dim, bias, norm, bits):
+    def __init__(self, num_heads, emb_dim, mlp_dim, bias, norm, dropout, bits):
         # Initialize the PyTorch Module superclass
         super().__init__()
 
@@ -128,6 +128,9 @@ class TransformerBlock(torch.nn.Module):
             #   Batch x Sequence x Embedding (batch-first, True)
             #   Sequence x Batch x Embedding (batch-second, False)
             batch_first=True,
+            # Amount of dropout to apply at the attention block output, i.e.,
+            # after the output projection, during training
+            dropout=dropout,
             # If query, key and value input are the same, packed input
             # projections use a single, large linear projection to produce
             # the actual query, key and value inputs. Otherwise, use
@@ -234,6 +237,8 @@ class TransformerBlock(torch.nn.Module):
                 # quantize the bias
                 return_quant_tensor=True
             ),
+            # Amount of dropout to apply at the sublayer output
+            torch.nn.Dropout(p=dropout),
             # Second mlp layer projecting back to the embedding dimension
             QuantLinear(
                 # Inputs have the configured mlp dimension, which is typically
@@ -257,7 +262,9 @@ class TransformerBlock(torch.nn.Module):
                 output_quant=None,
                 # Pass quantization information on to the next layer.
                 return_quant_tensor=True
-            )
+            ),
+            # Amount of dropout to apply at the sublayer output
+            torch.nn.Dropout(p=dropout)
         )
         # Residual branch addition skipping over the MLP layer
         self.residual_mlp = QuantEltwiseAdd(
@@ -317,6 +324,8 @@ class RadioMLTransformer(torch.nn.Module):
             # Quantization bit-width: For now all layers are quantized to the
             # same bit-width
             bits,
+            # Dropout: probability of an element to be zeroed during training
+            dropout=0.1,
             # Type of normalization layer to use in the transformer blocks
             #   Options are: layer-norm, batch-norm and none
             norm="layer-norm",
@@ -342,7 +351,7 @@ class RadioMLTransformer(torch.nn.Module):
         # Sequence of num_layers transformer encoder blocks
         self.encoder = torch.nn.Sequential(*[
             TransformerBlock(
-                num_heads, emb_dim, mlp_dim, bias, norm, bits
+                num_heads, emb_dim, mlp_dim, bias, norm, dropout, bits
             ) for _ in range(num_layers)
         ])
 

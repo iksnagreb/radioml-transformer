@@ -13,6 +13,8 @@ model:
   # Type of normalization layer to use in the transformer blocks
   #   Options are: layer-norm, batch-norm and none
   norm: "none"
+  # Dropout: probability of an element to be zeroed during training
+  dropout: 0.1
   # Number of bits to use for quantized representation in "almost all layers"
   bits: 4
   # Quantization bit-width at the model inputs: Typically this should
