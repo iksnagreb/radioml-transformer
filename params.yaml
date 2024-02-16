@@ -55,7 +55,7 @@ train:
     # Name of the optimization algorithm to use
     algorithm: "adam"
     # (Initial) Learning rate
-    lr: 0.001
+    lr: 0.0001
   # Loss function to use
   criterion: "cross-entropy"
   # DataLoader keyword arguments
