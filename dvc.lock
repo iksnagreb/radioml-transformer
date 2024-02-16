@@ -13,12 +13,12 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: 419dd4aa4d482a2b79cb1bb2a9108254
-      size: 14990
+      md5: d178bb39bb5ae2b82d2d04c2ac7f792c
+      size: 15001
     - path: train.py
       hash: md5
-      md5: b237891cdb0f148ea92a99dbc8405a27
-      size: 6008
+      md5: 8bb93f204d9f6c0120c35f7a74fa6d87
+      size: 6030
     params:
       params.yaml:
         dataset:
@@ -61,7 +61,7 @@ stages:
           num_classes: 24
         train:
           batch_size: 512
-          epochs: 20
+          epochs: 10
           optimizer:
             algorithm: adam
             lr: 0.001
@@ -75,15 +75,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: d0ea29b4cf3699d17f7fd8720e10f8f9
-      size: 1105
+      md5: 31c43e0c780caa0c329ef27c65c2fc88
+      size: 552
     - path: outputs/model.pt
       hash: md5
-      md5: d9d32af8c5109a854700562851ec5af3
+      md5: 95358aac638a91a4dd3f0c7cd08b5dcc
       size: 563750
     - path: outputs/optimizer.pt
       hash: md5
-      md5: d37c777718bd6d9fc27c7ce6c714d026
+      md5: e9389ef6e532f41e2f383b3717809d53
       size: 863301
   eval:
     cmd: python -m eval
@@ -98,15 +98,15 @@ stages:
       size: 5248
     - path: eval.py
       hash: md5
-      md5: ae00361af83eb4b671539ee898aa250c
-      size: 3141
+      md5: 6183537ae2c6f837d684f60157e7190f
+      size: 3163
     - path: model.py
       hash: md5
-      md5: 419dd4aa4d482a2b79cb1bb2a9108254
-      size: 14990
+      md5: d178bb39bb5ae2b82d2d04c2ac7f792c
+      size: 15001
     - path: outputs/model.pt
       hash: md5
-      md5: d9d32af8c5109a854700562851ec5af3
+      md5: 95358aac638a91a4dd3f0c7cd08b5dcc
       size: 563750
     params:
       params.yaml:
@@ -157,5 +157,5 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: 398eb775119e6c3426c8625997ec8bea
+      md5: 9a956772d9373bb62a0394128152cb34
       size: 29
