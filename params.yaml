@@ -10,8 +10,14 @@ model:
   emb_dim: 64
   # Size of the MLP layer dimension
   mlp_dim: 256
-  # Number of bits to use for quantized representation
-  bits: 8
+  # Number of bits to use for quantized representation in "almost all layers"
+  bits: 4
+  # Quantization bit-width at the model inputs: Typically this should
+  # be higher than for most other layers, e.g., keep this at 8 bits
+  input_bits: 8
+  # Quantization bit-width at the model outputs: Typically this should
+  # be higher than for most other layers, e.g., keep this at 8 bits
+  output_bits: 8
   # Number of classes at the classification head
   num_classes: 24
 # Training/Validation dataset configuration
