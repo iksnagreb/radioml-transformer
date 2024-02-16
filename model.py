@@ -80,7 +80,7 @@ def act_quantizer(bits, _signed=True):
     return Quantizer
 
 
-# Single-layer scaled sot-product attention block with MLP and normalization
+# Single-layer scaled dot-product attention block with MLP and normalization
 class TransformerBlock(torch.nn.Module):
     # Initializes the model and registers the module parameters
     def __init__(self, num_heads, emb_dim, mlp_dim, bias, bits):
@@ -322,6 +322,7 @@ class RadioMLTransformer(torch.nn.Module):
                 return_quant_tensor=False
             ),
             # # Softmax normalization to yield class probabilities
+            # # Note: Not required when training with cross-entropy loss
             # torch.nn.Softmax(dim=-1)
         )
 

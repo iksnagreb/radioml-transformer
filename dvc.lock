@@ -13,8 +13,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: d178bb39bb5ae2b82d2d04c2ac7f792c
-      size: 15001
+      md5: 3ba89e548870dc41c0dc39fa1181c289
+      size: 15074
     - path: train.py
       hash: md5
       md5: 8bb93f204d9f6c0120c35f7a74fa6d87
@@ -75,15 +75,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 31c43e0c780caa0c329ef27c65c2fc88
+      md5: 622ac933f9e12631aa1ffd20b09f8017
       size: 552
     - path: outputs/model.pt
       hash: md5
-      md5: 95358aac638a91a4dd3f0c7cd08b5dcc
+      md5: 4730b9d477d3d387bd36abc342d5b455
       size: 563750
     - path: outputs/optimizer.pt
       hash: md5
-      md5: e9389ef6e532f41e2f383b3717809d53
+      md5: 85c2ddca3994ee77b4b44d45f57d996e
       size: 863301
   eval:
     cmd: python -m eval
@@ -98,15 +98,15 @@ stages:
       size: 5248
     - path: eval.py
       hash: md5
-      md5: 6183537ae2c6f837d684f60157e7190f
-      size: 3163
+      md5: 886d77bb50acd9267ff32dd1ebd88091
+      size: 3159
     - path: model.py
       hash: md5
-      md5: d178bb39bb5ae2b82d2d04c2ac7f792c
-      size: 15001
+      md5: 3ba89e548870dc41c0dc39fa1181c289
+      size: 15074
     - path: outputs/model.pt
       hash: md5
-      md5: 95358aac638a91a4dd3f0c7cd08b5dcc
+      md5: 4730b9d477d3d387bd36abc342d5b455
       size: 563750
     params:
       params.yaml:
@@ -157,5 +157,84 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: 9a956772d9373bb62a0394128152cb34
+      md5: a2aedd300f24f75c9f46b320adf431fb
       size: 29
+  export:
+    cmd: python -m export
+    deps:
+    - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
+      hash: md5
+      md5: 13c38751da99a2739fdc04029a86b8e9
+      size: 21449148312
+    - path: dataset.py
+      hash: md5
+      md5: 098d3a3ea30571b048605c4de0818496
+      size: 5248
+    - path: export.py
+      hash: md5
+      md5: 2641c24900254edb4a3a3ecc62f55817
+      size: 2162
+    - path: model.py
+      hash: md5
+      md5: 3ba89e548870dc41c0dc39fa1181c289
+      size: 15074
+    - path: outputs/model.pt
+      hash: md5
+      md5: 4730b9d477d3d387bd36abc342d5b455
+      size: 563750
+    params:
+      params.yaml:
+        dataset:
+          path: data/GOLD_XYZ_OSC.0001_1024.hdf5
+          signal_to_noise_ratios:
+          - -6
+          - -4
+          - -2
+          - 0
+          - 2
+          - 4
+          - 6
+          - 8
+          - 10
+          - 12
+          - 14
+          - 16
+          - 18
+          - 20
+          - 22
+          - 24
+          - 26
+          - 28
+          - 30
+          splits:
+          - 0.7
+          - 0.15
+          - 0.15
+          seed: 12
+          reshape:
+          - -1
+          - 64
+        export:
+          opset_version: 14
+          do_constant_folding: true
+        model:
+          num_heads: 8
+          num_layers: 2
+          bias: true
+          emb_dim: 64
+          mlp_dim: 256
+          bits: 8
+          num_classes: 24
+    outs:
+    - path: outputs/inp.npy
+      hash: md5
+      md5: 582fb2993192271be4e7b3620f053ada
+      size: 8320
+    - path: outputs/model.onnx
+      hash: md5
+      md5: aa461a25c1fbce2c98724dd0cf3a832c
+      size: 482745
+    - path: outputs/out.npy
+      hash: md5
+      md5: 28542e554b6a3b8075de7d6392c459d4
+      size: 224

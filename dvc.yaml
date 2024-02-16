@@ -58,3 +58,31 @@ stages:
       - metrics.yaml:
           # Track via git, not dvc cache
           cache: false
+  # Stage exporting the trained model to ONNX
+  export:
+    # Stage runs the export script as the command
+    cmd: python -m export
+    # Data dependencies of this stage to determine when it needs to be rerun
+    deps:
+      # The training and evaluation dataset
+      - ${dataset.path}
+      # The model checkpoint produced by the training stage
+      - outputs/model.pt
+      # The model, dataset and evaluation python scripts
+      - model.py
+      - dataset.py
+      - export.py
+    # Parameters used by this stage, changing any of these triggers reruns
+    params:
+      # Track the model, dataset and export hyperparameter sections from the
+      # parameters file
+      - model
+      - dataset
+      - export
+    # Outputs produced which should be tracked and passed on to the next stages
+    outs:
+      # The exported model onnx graph file
+      - outputs/model.onnx
+      # Sample input-output pair for verification
+      - outputs/inp.npy
+      - outputs/out.npy

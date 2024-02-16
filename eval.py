@@ -19,8 +19,8 @@ from dataset import get_datasets
 
 # Main evaluation loop: Takes a trained model, loads the dataset and sets and
 # runs a bunch of inferences to collect metrics
-def evaluate(model, dataset, batch_size, loader):  # noqa: Shadoes model
-    # Check whether GPU training is available and select the appropriate device
+def evaluate(model, dataset, batch_size, loader):  # noqa: Shadows model
+    # Check whether GPU eval is available and select the appropriate device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # Move the model to the training device
     model = model.to(device)  # noqa: Shadows model...

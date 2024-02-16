@@ -72,3 +72,9 @@ eval:
     prefetch_factor: 4
     # Do not drop the last batch if it is incomplete
     drop_last: False
+# Model to ONNX export hyperparameters
+export:
+  # Version of the default ONNX opset
+  opset_version: 14
+  # Apply the constant-folding optimization
+  do_constant_folding: True
