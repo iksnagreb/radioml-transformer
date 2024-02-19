@@ -17,8 +17,8 @@ stages:
       size: 18683
     - path: train.py
       hash: md5
-      md5: 8bb93f204d9f6c0120c35f7a74fa6d87
-      size: 6030
+      md5: 2588d725e00741d38ed3ccfee6941214
+      size: 6133
     params:
       params.yaml:
         dataset:
@@ -63,6 +63,7 @@ stages:
           input_bits: 8
           output_bits: 8
           num_classes: 24
+        seed: 12
         train:
           batch_size: 512
           epochs: 10
@@ -79,15 +80,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 8c0ac14e77dbeceba98b47c47d1ba75d
-      size: 545
+      md5: 46881d6f83a6ad010445a3fcf405ea29
+      size: 548
     - path: outputs/model.pt
       hash: md5
-      md5: 26bf677dbf0dcf306d2b6f9aa4a6d795
+      md5: 37e4be8d2466b2a8cd10cae32db777c8
       size: 546978
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 77d7626beefc5c0965e536038ec57db7
+      md5: 83cddd84ae37263f3d454eed93044d17
       size: 849413
   eval:
     cmd: python -m eval
@@ -102,15 +103,15 @@ stages:
       size: 5248
     - path: eval.py
       hash: md5
-      md5: 886d77bb50acd9267ff32dd1ebd88091
-      size: 3159
+      md5: 8fc0273525ee0d4dc8b3a68496d08781
+      size: 3262
     - path: model.py
       hash: md5
       md5: 9cb271115c578eb300f08a23c48874c5
       size: 18683
     - path: outputs/model.pt
       hash: md5
-      md5: 26bf677dbf0dcf306d2b6f9aa4a6d795
+      md5: 37e4be8d2466b2a8cd10cae32db777c8
       size: 546978
     params:
       params.yaml:
@@ -162,10 +163,11 @@ stages:
           input_bits: 8
           output_bits: 8
           num_classes: 24
+        seed: 12
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: d3a950457d63f1a989cdc5aa3224085c
+      md5: 1dbd14901d2f87018cfbd4fabaeafb64
       size: 30
   export:
     cmd: python -m export
@@ -180,15 +182,15 @@ stages:
       size: 5248
     - path: export.py
       hash: md5
-      md5: 2641c24900254edb4a3a3ecc62f55817
-      size: 2162
+      md5: 7b3e475c0de679057ee99057a409e173
+      size: 2265
     - path: model.py
       hash: md5
       md5: 9cb271115c578eb300f08a23c48874c5
       size: 18683
     - path: outputs/model.pt
       hash: md5
-      md5: 26bf677dbf0dcf306d2b6f9aa4a6d795
+      md5: 37e4be8d2466b2a8cd10cae32db777c8
       size: 546978
     params:
       params.yaml:
@@ -237,6 +239,7 @@ stages:
           input_bits: 8
           output_bits: 8
           num_classes: 24
+        seed: 12
     outs:
     - path: outputs/inp.npy
       hash: md5
@@ -244,9 +247,9 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 43f3a7e58f8e5005b9f93b368e4dc6a3
+      md5: 7381262691335af3b1e15f40fcb9fe55
       size: 472670
     - path: outputs/out.npy
       hash: md5
-      md5: 74d5b794dd417a8f7c23ac6c18f5d8d7
+      md5: 130770faea42ffb2cb2190ba8eee5902
       size: 224

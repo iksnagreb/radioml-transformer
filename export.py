@@ -11,6 +11,8 @@ from brevitas.export import export_qonnx
 from model import RadioMLTransformer
 # The RadioML modulation classification dataset
 from dataset import get_datasets
+# Seeding RNGs for reproducibility
+from utils import seed
 
 
 # Exports the model to ONNX in conjunction with an input-output pair for
@@ -48,6 +50,8 @@ if __name__ == "__main__":
     with open("params.yaml") as file:
         # Load the configuration from yaml format
         params = yaml.safe_load(file)
+    # Seed all RNGs
+    seed(params["seed"])
     # Create a new model instance according to the configuration
     model = RadioMLTransformer(**params["model"])
     # Load the trained model parameters

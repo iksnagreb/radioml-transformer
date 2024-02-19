@@ -19,6 +19,7 @@ stages:
       - model
       - dataset
       - train
+      - seed
     # Outputs produced which should be tracked and passed on to the next stages
     outs:
       # The trained model checkpoint
@@ -52,6 +53,7 @@ stages:
       - model
       - dataset
       - eval
+      - seed
     # Metrics produced by this stage
     metrics:
       # Classification accuracy over the evaluation dataset
@@ -79,6 +81,7 @@ stages:
       - model
       - dataset
       - export
+      - seed
     # Outputs produced which should be tracked and passed on to the next stages
     outs:
       # The exported model onnx graph file
