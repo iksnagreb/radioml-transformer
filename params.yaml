@@ -59,6 +59,15 @@ train:
     algorithm: "adam"
     # (Initial) Learning rate
     lr: 0.0001
+    # L2 regularization
+    weight_decay: 1.0e-6
+    # Coefficients used for computing running averages of gradient and its
+    # square.
+    # Note: Set according to Vaswani et al. 2017
+    betas: [ 0.9, 0.98 ]
+    # Term added to the denominator to improve numerical stability
+    # Note: Set according to Vaswani et al. 2017
+    eps: 1.0e-9
   # Loss function to use
   criterion: "cross-entropy"
   # DataLoader keyword arguments
