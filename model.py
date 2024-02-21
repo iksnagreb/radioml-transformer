@@ -375,15 +375,6 @@ class RadioMLTransformer(torch.nn.Module):
         # Initialize the PyTorch Module superclass
         super().__init__()
 
-        # Model input quantization is configured separately form all other
-        # quantizers
-        self.input_quant = QuantIdentity(
-            # Quantize at the output of the Identity function
-            act_quant=act_quantizer(input_bits, _signed=True),
-            # Pass quantization information on to the next layer
-            return_quant_tensor=True
-        )
-
         # Positional encoding layer at the input
         self.pos = QuantBinaryPositionalEncoding(
             # Quantize the inputs to the positional encoding to the same
@@ -443,7 +434,7 @@ class RadioMLTransformer(torch.nn.Module):
     # class probabilities
     def forward(self, x):
         # Add positional encoding to the input
-        x = self.pos(self.input_quant(x))
+        x = self.pos(x)
         # Apply the classification head to the output of the sequence of
         # transformer encoder layers
         return self.cls_head(self.encoder(x))
