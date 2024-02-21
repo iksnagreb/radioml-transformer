@@ -15,11 +15,11 @@ model:
   mlp_dim: 256
   # Type of normalization layer to use in the transformer blocks
   #   Options are: layer-norm, batch-norm and none
-  norm: "none"
+  norm: "batch-norm"
   # Dropout: probability of an element to be zeroed during training
   dropout: 0.1
   # Number of bits to use for quantized representation in "almost all layers"
-  bits: 4
+  bits: 2
   # Quantization bit-width at the model inputs: Typically this should
   # be higher than for most other layers, e.g., keep this at 8 bits
   input_bits: 8
@@ -52,13 +52,13 @@ train:
   # Batch size for training
   batch_size: 512
   # Number of training epochs to run
-  epochs: 10
+  epochs: 30
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
     algorithm: "adam"
     # (Initial) Learning rate
-    lr: 0.0001
+    lr: 0.001
     # L2 regularization
     weight_decay: 1.0e-6
     # Coefficients used for computing running averages of gradient and its

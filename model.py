@@ -144,9 +144,9 @@ class TransformerBlock(torch.nn.Module):
             # following the query and key matmul.
             softmax_input_quant=act_quantizer(bits, _signed=True),
             # Quantize the input projections weights as configured
-            in_proj_weight_quant=weight_quantizer(bits, _signed=True),
+            in_proj_weight_quant=weight_quantizer(bits=8, _signed=True),
             # Quantize the bias of the input projections as configured
-            in_proj_bias_quant=bias_quantizer(bits, _signed=True),
+            in_proj_bias_quant=bias_quantizer(bits=8, _signed=True),
             # No quantization in front of the input projections as this is
             # either done by the output quantization of the preceding attention
             # block (see norm_mlp) or in case of the first layer by the separate
@@ -154,9 +154,9 @@ class TransformerBlock(torch.nn.Module):
             in_proj_input_quant=None,
 
             # Quantize the output projections weights as configured
-            out_proj_weight_quant=weight_quantizer(bits, _signed=True),
+            out_proj_weight_quant=weight_quantizer(bits=8, _signed=True),
             # Quantize the bias of the output projections as configured
-            out_proj_bias_quant=bias_quantizer(bits, _signed=True),
+            out_proj_bias_quant=bias_quantizer(bits=8, _signed=True),
             # Quantize the input to the output projection as configured
             out_proj_input_quant=act_quantizer(bits, _signed=True),
 
@@ -214,10 +214,10 @@ class TransformerBlock(torch.nn.Module):
                 bias=bias,
                 # Quantize weights to the same representation as all other
                 # layers
-                weight_quant=weight_quantizer(bits, _signed=True),
+                weight_quant=weight_quantizer(bits=8, _signed=True),
                 # Quantize the bias to the same representation as all other
                 # layers
-                bias_quant=bias_quantizer(bits, _signed=True),
+                bias_quant=bias_quantizer(bits=8, _signed=True),
                 # No input quantizer as this is directly preceded by the output
                 # quantizer of the norm layer above, following the attention
                 input_quant=None,
@@ -250,10 +250,10 @@ class TransformerBlock(torch.nn.Module):
                 bias=bias,
                 # Quantize weights to the same representation as all other
                 # layers
-                weight_quant=weight_quantizer(bits, _signed=True),
+                weight_quant=weight_quantizer(bits=8, _signed=True),
                 # Quantize the bias to the same representation as all other
                 # layers
-                bias_quant=bias_quantizer(bits, _signed=True),
+                bias_quant=bias_quantizer(bits=8, _signed=True),
                 # No input quantizer as the inputs are already quantized by the
                 # preceding ReLU layer
                 input_quant=None,
@@ -304,6 +304,42 @@ class TransformerBlock(torch.nn.Module):
         return self.norm_mlp(self.residual_mlp(x, self.mlp(x)))
 
 
+# Quantized binary positional encoding layer
+class QuantBinaryPositionalEncoding(torch.nn.Module):
+    # Initializes the model and registers the module parameters
+    def __init__(self, input_quant, return_quant_tensor):
+        # Initialize the PyTorch Module superclass
+        super().__init__()
+        # Adds the quantized input and positional encoding
+        self.add = QuantEltwiseAdd(
+            # Input quantization to be applied to the input as well as the
+            # positional encodings
+            input_quant=input_quant,
+            # Disable the output quantizer after the add operation. Output of
+            # the add will have one more bit than the inputs, which is probably
+            # fine and does not require re-quantization.
+            output_quant=None,
+            # Returns quantization information to the next layer
+            return_quant_tensor=return_quant_tensor
+        )
+
+    # Forward pass adding positional encoding to the input tensor
+    def forward(self, x):
+        # Get the size of the inputs to dynamically generate encodings of the
+        # same size
+        _, seq, emb = x.shape
+        # Binary positional encoding fills the embedding dimension with the bit
+        # pattern corresponding to the position in the sequence
+        pos = torch.as_tensor([
+            [(x & (1 << bit)) >> bit for bit in range(emb)] for x in range(seq)
+        ])
+        # Move the encoding tensor to the same device as the input tensor
+        pos = pos.to(x.device)
+        # Add the quantized encoding tp the quantized input
+        #   Note: Convert encoding to bipolar representation
+        return self.add(x, 2 * pos - 1)
+
+
 # RadioML modulation classification transformer encoder model
 class RadioMLTransformer(torch.nn.Module):
     # Initializes the model and registers the module parameters
@@ -348,6 +384,15 @@ class RadioMLTransformer(torch.nn.Module):
             return_quant_tensor=True
         )
 
+        # Positional encoding layer at the input
+        self.pos = QuantBinaryPositionalEncoding(
+            # Quantize the inputs to the positional encoding to the same
+            # bit-with as the input
+            input_quant=act_quantizer(input_bits, _signed=True),
+            # Pass quantization information on to the next layer
+            return_quant_tensor=True
+        )
+
         # Sequence of num_layers transformer encoder blocks
         self.encoder = torch.nn.Sequential(*[
             TransformerBlock(
@@ -365,7 +410,6 @@ class RadioMLTransformer(torch.nn.Module):
 
         # Classification head attached at the end
         self.cls_head = torch.nn.Sequential(
-            # Perform global average pooling along the sequence length
             GlobalAveragePool(),
             # Project from embedding dimension to the number of classes
             QuantLinear(
@@ -377,13 +421,13 @@ class RadioMLTransformer(torch.nn.Module):
                 bias=bias,
                 # Quantize weights to the same representation as all other
                 # layers
-                weight_quant=weight_quantizer(bits, _signed=True),
+                weight_quant=weight_quantizer(output_bits, _signed=True),
                 # Quantize the bias to the same representation as all other
                 # layers
-                bias_quant=bias_quantizer(bits, _signed=True),
+                bias_quant=bias_quantizer(output_bits, _signed=True),
                 # Quantize the input of the layer, there is no output
                 # quantization in the preceding pooling layer
-                input_quant=act_quantizer(bits, _signed=True),
+                input_quant=act_quantizer(output_bits, _signed=True),
                 # Model output quantization is configured separately form all
                 # other quantizers
                 output_quant=act_quantizer(output_bits, _signed=True),
@@ -399,6 +443,8 @@ class RadioMLTransformer(torch.nn.Module):
     # Model forward pass taking an input sequence and returning a single set of
     # class probabilities
     def forward(self, x):
+        # Add positional encoding to the input
+        x = self.pos(self.input_quant(x))
         # Apply the classification head to the output of the sequence of
         # transformer encoder layers
-        return self.cls_head(self.encoder(self.input_quant(x)))
+        return self.cls_head(self.encoder(x))

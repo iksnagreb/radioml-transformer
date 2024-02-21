@@ -13,12 +13,12 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: 9cb271115c578eb300f08a23c48874c5
-      size: 18683
+      md5: 9918682b9a20f3928c2e72aa84f7b530
+      size: 20776
     - path: train.py
       hash: md5
-      md5: 2588d725e00741d38ed3ccfee6941214
-      size: 6133
+      md5: 9297380665b4179cd10aec062317f123
+      size: 6625
     params:
       params.yaml:
         dataset:
@@ -57,19 +57,19 @@ stages:
           bias: true
           emb_dim: 64
           mlp_dim: 256
-          norm: none
+          norm: batch-norm
           dropout: 0.1
-          bits: 4
+          bits: 2
           input_bits: 8
           output_bits: 8
           num_classes: 24
         seed: 12
         train:
           batch_size: 512
-          epochs: 10
+          epochs: 30
           optimizer:
             algorithm: adam
-            lr: 0.0001
+            lr: 0.001
             weight_decay: 1e-06
             betas:
             - 0.9
@@ -85,16 +85,16 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: a5b4cbe7354f6384c4fa55b2eb258eb8
-      size: 545
+      md5: bec797e3ddc86fdf70609ec52fbf9d08
+      size: 1638
     - path: outputs/model.pt
       hash: md5
-      md5: 898410ae35da504f24c3afcd0cbbab5f
-      size: 546978
+      md5: 28c6fb5794071090bf6be6a6bcfe1d60
+      size: 559993
     - path: outputs/optimizer.pt
       hash: md5
-      md5: d3c82d8d93856f2c9ab9a4ca6a4271cc
-      size: 849413
+      md5: 07de1d27467341ac63588bf090dd6cb5
+      size: 860933
   eval:
     cmd: python -m eval
     deps:
@@ -112,12 +112,12 @@ stages:
       size: 3262
     - path: model.py
       hash: md5
-      md5: 9cb271115c578eb300f08a23c48874c5
-      size: 18683
+      md5: 9918682b9a20f3928c2e72aa84f7b530
+      size: 20776
     - path: outputs/model.pt
       hash: md5
-      md5: 898410ae35da504f24c3afcd0cbbab5f
-      size: 546978
+      md5: 28c6fb5794071090bf6be6a6bcfe1d60
+      size: 559993
     params:
       params.yaml:
         dataset:
@@ -162,9 +162,9 @@ stages:
           bias: true
           emb_dim: 64
           mlp_dim: 256
-          norm: none
+          norm: batch-norm
           dropout: 0.1
-          bits: 4
+          bits: 2
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -172,7 +172,7 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: a9b2e79428fc859452e7ea74973d0ba6
+      md5: 3b089101588102742b66ed87173a2816
       size: 30
   export:
     cmd: python -m export
@@ -191,12 +191,12 @@ stages:
       size: 2265
     - path: model.py
       hash: md5
-      md5: 9cb271115c578eb300f08a23c48874c5
-      size: 18683
+      md5: 9918682b9a20f3928c2e72aa84f7b530
+      size: 20776
     - path: outputs/model.pt
       hash: md5
-      md5: 898410ae35da504f24c3afcd0cbbab5f
-      size: 546978
+      md5: 28c6fb5794071090bf6be6a6bcfe1d60
+      size: 559993
     params:
       params.yaml:
         dataset:
@@ -238,9 +238,9 @@ stages:
           bias: true
           emb_dim: 64
           mlp_dim: 256
-          norm: none
+          norm: batch-norm
           dropout: 0.1
-          bits: 4
+          bits: 2
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -252,9 +252,9 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 9d0648b028a0e1424a2125ccabf9c654
-      size: 472670
+      md5: 95eb160aec48f37b120a4384d53c2ea9
+      size: 482817
     - path: outputs/out.npy
       hash: md5
-      md5: 8ee55b1e4e168eb5f80da00406f1127a
+      md5: 06e1f944c0a900a085380ff4397d428a
       size: 224
