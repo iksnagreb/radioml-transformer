@@ -42,8 +42,9 @@ def evaluate(model, dataset, batch_size, loader):  # noqa: Shadows model
         # Iterate the (input, target labels) pairs
         for x, cls, snr in tqdm.tqdm(eval_data, "eval-batch", leave=False):
             # Model forward pass producing logits corresponding to class
-            # probabilities
-            p = model(x.to(device)).argmax(dim=-1)
+            # probabilities. Aggregate the logits (~ class probabilities) along
+            # the sequence dimension.
+            p = model(x.to(device)).sum(dim=1).argmax(dim=-1)
             # Each sample in the batch will generate a new record
             for cls, p, snr in zip(cls, p, snr):  # noqa: Shadows cls, p, snr
                 # Append prediction and ground truth to the data frame

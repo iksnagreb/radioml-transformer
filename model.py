@@ -410,8 +410,6 @@ class RadioMLTransformer(torch.nn.Module):
 
         # Classification head attached at the end
         self.cls_head = torch.nn.Sequential(
-            # Perform global average pooling along the sequence length
-            GlobalAveragePool(),
             # Project from embedding dimension to the number of classes
             QuantLinear(
                 # Inputs have the size of the attention embedding dimension

@@ -84,11 +84,10 @@ def train(
             optimizer.zero_grad(set_to_none=True)
             # Feed input data to model to get predictions
             p = model(x.to(device))  # noqa: Duplicate, see below
-            # # Repeat the target class labels for each sequence step
-            # y = torch.stack(x.shape[1] * [y], dim=-1).flatten()
-            # # Loss between class probabilities and true class labels
-            # loss = criterion(p.reshape(y.shape[0], -1), y.to(device))
-            loss = criterion(p, y.to(device))
+            # Repeat the target class labels for each sequence step
+            y = torch.stack(x.shape[1] * [y], dim=-1).flatten()
+            # Loss between class probabilities and true class labels
+            loss = criterion(p.reshape(y.shape[0], -1), y.to(device))
             # Backpropagation of the error to compute gradients
             loss.backward()
             # Parameter update step
@@ -107,11 +106,10 @@ def train(
             for x, y, _ in tqdm.tqdm(valid_data, "valid-batch", leave=False):
                 # Feed input data to model to get predictions
                 p = model(x.to(device))  # noqa: Duplicate, see above
-                # # Repeat the target class labels for each sequence step
-                # y = torch.stack(x.shape[1] * [y], dim=-1).flatten()
-                # # Loss between class probabilities and true class labels
-                # loss = criterion(p.reshape(y.shape[0], -1), y.to(device))
-                loss = criterion(p, y.to(device))
+                # Repeat the target class labels for each sequence step
+                y = torch.stack(x.shape[1] * [y], dim=-1).flatten()
+                # Loss between class probabilities and true class labels
+                loss = criterion(p.reshape(y.shape[0], -1), y.to(device))
                 # Accumulate the loss over the whole validation dataset
                 valid_loss += loss.item()
         # Append loss information to the log
