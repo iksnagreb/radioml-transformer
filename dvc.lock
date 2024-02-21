@@ -13,8 +13,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: 9918682b9a20f3928c2e72aa84f7b530
-      size: 20776
+      md5: 53b2d415043f8110c86a1568241e5015
+      size: 20831
     - path: train.py
       hash: md5
       md5: 9297380665b4179cd10aec062317f123
@@ -85,15 +85,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: bec797e3ddc86fdf70609ec52fbf9d08
-      size: 1638
+      md5: 6415c5085efd74e7719d16f31bc4ebac
+      size: 1648
     - path: outputs/model.pt
       hash: md5
-      md5: 28c6fb5794071090bf6be6a6bcfe1d60
+      md5: b4aa967117148c8a411a8014d4f787fe
       size: 559993
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 07de1d27467341ac63588bf090dd6cb5
+      md5: 4c4a65a3da0cf4d6ebc50457613aaee2
       size: 860933
   eval:
     cmd: python -m eval
@@ -112,11 +112,11 @@ stages:
       size: 3262
     - path: model.py
       hash: md5
-      md5: 9918682b9a20f3928c2e72aa84f7b530
-      size: 20776
+      md5: 53b2d415043f8110c86a1568241e5015
+      size: 20831
     - path: outputs/model.pt
       hash: md5
-      md5: 28c6fb5794071090bf6be6a6bcfe1d60
+      md5: b4aa967117148c8a411a8014d4f787fe
       size: 559993
     params:
       params.yaml:
@@ -172,8 +172,8 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: 3b089101588102742b66ed87173a2816
-      size: 30
+      md5: d7ed4f841bcf40678cf3cb48939adaa1
+      size: 29
   export:
     cmd: python -m export
     deps:
@@ -191,11 +191,11 @@ stages:
       size: 2265
     - path: model.py
       hash: md5
-      md5: 9918682b9a20f3928c2e72aa84f7b530
-      size: 20776
+      md5: 53b2d415043f8110c86a1568241e5015
+      size: 20831
     - path: outputs/model.pt
       hash: md5
-      md5: 28c6fb5794071090bf6be6a6bcfe1d60
+      md5: b4aa967117148c8a411a8014d4f787fe
       size: 559993
     params:
       params.yaml:
@@ -252,9 +252,9 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 95eb160aec48f37b120a4384d53c2ea9
-      size: 482817
+      md5: 2cdb1801df5139b141761b5c9959d208
+      size: 499766
     - path: outputs/out.npy
       hash: md5
-      md5: 06e1f944c0a900a085380ff4397d428a
+      md5: 999d3bcde678cb3b29c67edc79869982
       size: 224
