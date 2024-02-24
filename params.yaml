@@ -41,7 +41,7 @@ dataset:
     -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
   ]
   # Splits the dataset into train/validation/evaluation subsets
-  splits: [ 0.70, 0.15, 0.15 ]  # 70%, 15%, 15% splits
+  splits: [ 0.80, 0.10, 0.10 ]  # 80%, 20%, 20% splits
   # Seed used for reproducible splitting of datasets
   seed: 12
   # Reshape the dataset to fit the expected embedding dimension of the model
