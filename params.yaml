@@ -17,7 +17,7 @@ model:
   #   Options are: layer-norm, batch-norm and none
   norm: "batch-norm"
   # Dropout: probability of an element to be zeroed during training
-  dropout: 0.1
+  dropout: 0.0
   # Number of bits to use for quantized representation in "almost all layers"
   bits: 2
   # Quantization bit-width at the model inputs: Typically this should
