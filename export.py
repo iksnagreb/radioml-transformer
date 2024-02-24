@@ -1,5 +1,5 @@
-# YAML for loading experiment configurations
-import yaml
+# Use the DVC api for loading the YAML parameters
+import dvc.api
 # Save verification input-output pair as numpy array
 import numpy as np
 # PyTorch base package: Math and Tensor Stuff
@@ -46,10 +46,8 @@ def export(model, dataset, **kwargs):  # noqa: Shadows model
 
 # Script entrypoint
 if __name__ == "__main__":
-    # Open the configuration file
-    with open("params.yaml") as file:
-        # Load the configuration from yaml format
-        params = yaml.safe_load(file)
+    # Load the parameters file
+    params = dvc.api.params_show("params.yaml", stages="export")
     # Seed all RNGs
     seed(params["seed"])
     # Create a new model instance according to the configuration

@@ -1,5 +1,7 @@
-# YAML for loading experiment configurations
+# YAML for saving experiment metrics
 import yaml
+# Use the DVC api for loading the YAML parameters
+import dvc.api
 # Progressbar in for loops
 import tqdm
 # Pandas to handle the results as table, i.e., DataFrame
@@ -62,10 +64,8 @@ def evaluate(model, dataset, batch_size, loader):  # noqa: Shadows model
 
 # Script entrypoint
 if __name__ == "__main__":
-    # Open the configuration file
-    with open("params.yaml") as file:
-        # Load the configuration from yaml format
-        params = yaml.safe_load(file)
+    # Load the parameters file
+    params = dvc.api.params_show("params.yaml", stages="eval")
     # Seed all RNGs
     seed(params["seed"])
     # Create a new model instance according to the configuration
