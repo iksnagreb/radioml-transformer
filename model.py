@@ -331,10 +331,10 @@ class QuantBinaryPositionalEncoding(torch.nn.Module):
         # Binary positional encoding fills the embedding dimension with the bit
         # pattern corresponding to the position in the sequence
         pos = torch.as_tensor([
-            [(x & (1 << bit)) >> bit for bit in range(emb)] for x in range(seq)
+            [(n & (1 << bit)) >> bit for bit in range(emb)] for n in range(seq)
         ])
         # Move the encoding tensor to the same device as the input tensor
-        pos = pos.to(x.device)
+        pos = pos.to(x.device, dtype=x.dtype)
         # Add the quantized encoding tp the quantized input
         #   Note: Convert encoding to bipolar representation
         return self.add(x, 2 * pos - 1)
