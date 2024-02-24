@@ -52,7 +52,7 @@ train:
   # Batch size for training
   batch_size: 512
   # Number of training epochs to run
-  epochs: 1
+  epochs: 30
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
