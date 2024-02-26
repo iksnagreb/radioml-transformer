@@ -60,7 +60,7 @@ train:
     # (Initial) Learning rate
     lr: 0.001
     # L2 regularization
-    weight_decay: 1.0e-6
+    weight_decay: 1e-05
     # Coefficients used for computing running averages of gradient and its
     # square.
     # Note: Set according to Vaswani et al. 2017
