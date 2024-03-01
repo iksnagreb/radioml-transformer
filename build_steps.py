@@ -32,6 +32,11 @@ from finn.transformation.fpgadataflow.convert_to_hls_layers import (
 from transformation.remove import RemoveIdentityTranspose, RemoveIdentityReshape
 # Cleanup transformations
 from transformation.squeeze import Squeeze
+# Transformations involving Transpose operators
+from transformation.transpose import (
+    MoveTransposePastEltwise,
+    CollapseRepeatedTranspose
+)
 # Detects the attention pattern and converts to HLS custom op
 from transformation.attention import (
     InferScaledDotProductAttention,
@@ -113,6 +118,22 @@ def step_streamline_residual(model: ModelWrapper, _):
     model = model.transform(MoveLinearPastFork())
     model = model.transform(MoveScalarLinearPastInvariants())
     # And again to get the last floating-point Mul absorbed into thresholds
+    model = model.transform(Streamline())
+    # Return the streamlined model
+    return model
+
+
+# Streamlining transformation to be applied to the normalization layers
+def step_streamline_norms(model: ModelWrapper, _):
+    # Streamline transposed batch normalization (move transposes past the
+    # scale-bias operator, so they can be collapsed afterward)
+    model = model.transform(MoveTransposePastEltwise())
+    # There should now be transposes next to each other which can be collapsed
+    model = model.transform(CollapseRepeatedTranspose())
+    # The transposes around the batch normalization should be collapsed by now
+    # and cancel each other out
+    model = model.transform(RemoveIdentityTranspose())
+    # This might have enabled more streamlining transformations
     model = model.transform(Streamline())
     # Return the streamlined model
     return model
