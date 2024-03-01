@@ -10,3 +10,5 @@ onnx~=1.15.0
 onnxoptimizer~=0.3.13
 onnxruntime~=1.17.0
 git+https://github.com/iksnagreb/brevitas.git@34c350afde0a69b7a39b13eb4748b979bdae1eff
+git+https://github.com/iksnagreb/qonnx.git@finn/pull/901
+git+https://github.com/iksnagreb/finn.git@merge/attention

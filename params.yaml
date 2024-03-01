@@ -15,7 +15,7 @@ model:
   mlp_dim: 256
   # Type of normalization layer to use in the transformer blocks
   #   Options are: layer-norm, batch-norm and none
-  norm: "batch-norm"
+  norm: "none"
   # Dropout: probability of an element to be zeroed during training
   dropout: 0.0
   # Number of bits to use for quantized representation in "almost all layers"
@@ -52,7 +52,7 @@ train:
   # Batch size for training
   batch_size: 512
   # Number of training epochs to run
-  epochs: 30
+  epochs: 1
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
@@ -101,3 +101,27 @@ export:
   opset_version: 14
   # Apply the constant-folding optimization
   do_constant_folding: True
+# FPGA dataflow accelerator build configuration
+build:
+  # FINN compiler configurations
+  finn:
+    # Directory to store the build outputs
+    output_dir: "outputs/build"
+    # Target clock period, i.e., inverse of target frequency
+    synth_clk_period_ns: 10.0
+    # Board to target with the build
+    board: "RFSoC2x2"
+    # Path to folding configuration JSON file
+    folding_config_file: "folding.json"
+    #  # Optional: Start the build from a specific step
+    #  start_step: "step_tidy_up_pre_attention"
+    #  # Optional: Stop the build after a specific step
+    #  stop_step: "step_hls_ipgen"
+  # Build metrics aggregation configuration
+  metrics:
+    # Path to the report file to be summarized
+    # Note: remember to adjust the build directory when changing the config
+    # above
+    report: "outputs/build/report/post_synth_resources.json"
+    # Filter the report rows
+    filter: "(top)"

@@ -89,3 +89,42 @@ stages:
       # Sample input-output pair for verification
       - outputs/inp.npy
       - outputs/out.npy
+  # Stage running the finn dataflow accelerator build of the model
+  build:
+    # Command running a finn build of the model produced during export
+    #   Note: More options should be provided via environment variables
+    cmd: $FINN/run-docker.sh build_custom $(pwd)
+    # Dependencies of this stage to determine when it needs to be rerun
+    deps:
+      # The script executing the stage
+      - build.py
+      # The custom build steps implemented in this package
+      - build_steps.py
+      # Custom graph transformations implemented in this package
+      - transformation/
+      # The model export produced by the export stage: This triggers rerunning
+      # this stage when the model configuration changes
+      - outputs/model.onnx
+      # Input/Output pair in numpy format for verification during the build
+      - outputs/inp.npy
+      - outputs/out.npy
+    # Parameters used by this stage
+    params:
+      # Random number generator seed from params.yaml for reproducibility
+      - seed
+      # Track the build section from the parameters file
+      - build
+      # Folding configurations specifying parallelization and FIFO sizes for the
+      # layers/operators
+      - ${build.finn.folding_config_file}:
+    # Outputs produced by this stage which should be tracked and passed on to
+    # the next stage
+    outs:
+      # Track everything from the build directory
+      - ${build.finn.output_dir}/
+        # Metrics produced by this stage
+    metrics:
+      # Resource utilization metrics
+      - resources.yaml:
+          # Track via git, not dvc cache
+          cache: false

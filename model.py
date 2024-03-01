@@ -307,7 +307,7 @@ class TransformerBlock(torch.nn.Module):
 # Quantized binary positional encoding layer
 class QuantBinaryPositionalEncoding(torch.nn.Module):
     # Initializes the model and registers the module parameters
-    def __init__(self, input_quant, return_quant_tensor):
+    def __init__(self, input_quant, output_quant, return_quant_tensor):
         # Initialize the PyTorch Module superclass
         super().__init__()
         # Adds the quantized input and positional encoding
@@ -315,10 +315,8 @@ class QuantBinaryPositionalEncoding(torch.nn.Module):
             # Input quantization to be applied to the input as well as the
             # positional encodings
             input_quant=input_quant,
-            # Disable the output quantizer after the add operation. Output of
-            # the add will have one more bit than the inputs, which is probably
-            # fine and does not require re-quantization.
-            output_quant=None,
+            # Quantize the outputs after adding input and positional encoding
+            output_quant=output_quant,
             # Returns quantization information to the next layer
             return_quant_tensor=return_quant_tensor
         )
@@ -378,8 +376,11 @@ class RadioMLTransformer(torch.nn.Module):
         # Positional encoding layer at the input
         self.pos = QuantBinaryPositionalEncoding(
             # Quantize the inputs to the positional encoding to the same
-            # bit-with as the input
-            input_quant=act_quantizer(input_bits, _signed=True),
+            # bit-width as the input
+            input_quant=None,
+            # Quantize the sum of input and positional encoding to the same
+            # bit-width as the input
+            output_quant=act_quantizer(input_bits, _signed=True),
             # Pass quantization information on to the next layer
             return_quant_tensor=True
         )
@@ -392,7 +393,7 @@ class RadioMLTransformer(torch.nn.Module):
         ])
 
         # Global average pooling along the sequence dimension
-        class GlobalAveragePool(torch.nn.Module):
+        class GlobalAveragePool(torch.nn.Module):  # noqa: Unused
             # Forward pass averaging the feature map
             def forward(self, x):  # noqa: May be static
                 # Compute mean along the sequence dimension, which for
@@ -415,9 +416,10 @@ class RadioMLTransformer(torch.nn.Module):
                 # Quantize the bias to the same representation as all other
                 # layers
                 bias_quant=bias_quantizer(output_bits, _signed=True),
-                # Quantize the input of the layer, there is no output
-                # quantization in the preceding pooling layer
-                input_quant=act_quantizer(output_bits, _signed=True),
+                # Without pooling, this is preceded by the quantizer of the norm
+                # layer following the last attention block MLP, thus no further
+                # input quantizer is needed
+                input_quant=None,
                 # Model output quantization is configured separately form all
                 # other quantizers
                 output_quant=act_quantizer(output_bits, _signed=True),
