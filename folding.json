@@ -27,7 +27,7 @@
       "all"
     ],
     "SIMD": [
-      8,
+      64,
       [
         "MatrixVectorActivation"
       ]
@@ -219,67 +219,67 @@
     ]
   },
   "AddStreams_Batch_0": {
-    "PE": 1,
+    "PE": 2,
     "inFIFODepths": [
-      256,
-      256
+      1024,
+      1024
     ],
     "outFIFODepths": [
       2
     ]
   },
   "AddStreams_Batch_1": {
-    "PE": 1,
+    "PE": 2,
     "inFIFODepths": [
-      256,
-      256
+      1024,
+      1024
     ],
     "outFIFODepths": [
       2
     ]
   },
   "AddStreams_Batch_2": {
-    "PE": 1,
+    "PE": 2,
     "inFIFODepths": [
-      256,
-      256
+      1024,
+      1024
     ],
     "outFIFODepths": [
       2
     ]
   },
   "AddStreams_Batch_3": {
-    "PE": 1,
+    "PE": 2,
     "inFIFODepths": [
-      256,
-      256
+      1024,
+      1024
     ],
     "outFIFODepths": [
       2
     ]
   },
   "Thresholding_Batch_0": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_1": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_2": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_3": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_4": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_5": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_6": {
-    "PE": 1
+    "PE": 2
   },
   "Thresholding_Batch_7": {
-    "PE": 1
+    "PE": 2
   }
 }

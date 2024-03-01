@@ -85,16 +85,16 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 39bf50b31ad4fd751d152b374f254276
+      md5: f9f32d8c13b879bd552814a5032ec2d2
       size: 60
     - path: outputs/model.pt
       hash: md5
-      md5: 89ac4ff9635f321126859e6a20d60ff8
-      size: 544039
+      md5: cbfd091ea8757a9d441c08c1519ebb12
+      size: 543335
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 3800255569358348c18069f580a04d7f
-      size: 848645
+      md5: 814198e2f36c65c9453087c8ebe14b85
+      size: 847237
   eval:
     cmd: python -m eval
     deps:
@@ -116,8 +116,8 @@ stages:
       size: 20431
     - path: outputs/model.pt
       hash: md5
-      md5: 89ac4ff9635f321126859e6a20d60ff8
-      size: 544039
+      md5: cbfd091ea8757a9d441c08c1519ebb12
+      size: 543335
     params:
       params.yaml:
         dataset:
@@ -172,7 +172,7 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: 2a9d8e7b9b9be245a04fcc7c7e03f89b
+      md5: 8522332f014ed707debe17709ad8eeee
       size: 30
   export:
     cmd: python -m export
@@ -195,8 +195,8 @@ stages:
       size: 20431
     - path: outputs/model.pt
       hash: md5
-      md5: 89ac4ff9635f321126859e6a20d60ff8
-      size: 544039
+      md5: cbfd091ea8757a9d441c08c1519ebb12
+      size: 543335
     params:
       params.yaml:
         dataset:
@@ -252,11 +252,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: f49c02775768d5311cc3028985048175
+      md5: 4eb73970c9b89390e26c82502355cd36
       size: 480303
     - path: outputs/out.npy
       hash: md5
-      md5: cf45c3e1cd7496e0e840af93eb4279cd
+      md5: 2023b136da2122461f7bd7fbd02a6578
       size: 3200
   build:
     cmd: $FINN/run-docker.sh build_custom $(pwd)
@@ -275,16 +275,16 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: f49c02775768d5311cc3028985048175
+      md5: 4eb73970c9b89390e26c82502355cd36
       size: 480303
     - path: outputs/out.npy
       hash: md5
-      md5: cf45c3e1cd7496e0e840af93eb4279cd
+      md5: 2023b136da2122461f7bd7fbd02a6578
       size: 3200
     - path: transformation/
       hash: md5
-      md5: 5401d99e0528250d23b26b4f141f0f1d.dir
-      size: 127864
+      md5: a6b545470141853f9e97afd26d8e6050.dir
+      size: 127939
       nfiles: 14
     params:
       params.yaml:
@@ -300,31 +300,31 @@ stages:
         seed: 12
       folding.json:
         AddStreams_Batch_0:
-          PE: 1
+          PE: 2
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           outFIFODepths:
           - 2
         AddStreams_Batch_1:
-          PE: 1
+          PE: 2
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           outFIFODepths:
           - 2
         AddStreams_Batch_2:
-          PE: 1
+          PE: 2
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           outFIFODepths:
           - 2
         AddStreams_Batch_3:
-          PE: 1
+          PE: 2
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           outFIFODepths:
           - 2
         Defaults:
@@ -349,7 +349,7 @@ stages:
             - 2
           - all
           SIMD:
-          - 8
+          - 64
           - - MatrixVectorActivation
           PE:
           - 8
@@ -477,28 +477,28 @@ stages:
           outFIFODepths:
           - 256
         Thresholding_Batch_0:
-          PE: 1
+          PE: 2
         Thresholding_Batch_1:
-          PE: 1
+          PE: 2
         Thresholding_Batch_2:
-          PE: 1
+          PE: 2
         Thresholding_Batch_3:
-          PE: 1
+          PE: 2
         Thresholding_Batch_4:
-          PE: 1
+          PE: 2
         Thresholding_Batch_5:
-          PE: 1
+          PE: 2
         Thresholding_Batch_6:
-          PE: 1
+          PE: 2
         Thresholding_Batch_7:
-          PE: 1
+          PE: 2
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 19a8845570de72d07dbb18beb86074af.dir
-      size: 128705697
-      nfiles: 3263
+      md5: 9e87cacf0d86c4a125e77a2e1b274566.dir
+      size: 132561624
+      nfiles: 3140
     - path: resources.yaml
       hash: md5
-      md5: eb710b3273f7c7258fb79ceaf1ab6db9
-      size: 77
+      md5: 6db5d469df93f4df99b1d1335a1fd0e1
+      size: 78
