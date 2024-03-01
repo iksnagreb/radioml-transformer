@@ -66,7 +66,7 @@ stages:
         seed: 12
         train:
           batch_size: 512
-          epochs: 30
+          epochs: 100
           optimizer:
             algorithm: adam
             lr: 0.001
@@ -85,15 +85,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 49aafc818d7d4a307dd8cc5ca1f628e8
-      size: 1628
+      md5: c8c60e67b203bf065588e66e92112589
+      size: 5404
     - path: outputs/model.pt
       hash: md5
-      md5: 9dc2944a7d0a1d38a1434c34fc0ee9be
+      md5: fb9a97808d44c0c23892482de2dacea5
       size: 556798
     - path: outputs/optimizer.pt
       hash: md5
-      md5: a64b640ee0f64dd6595774d5ba5b6efc
+      md5: bedceee7ea67f82cd77d5e1698ee4fd2
       size: 860101
   eval:
     cmd: python -m eval
@@ -116,7 +116,7 @@ stages:
       size: 20348
     - path: outputs/model.pt
       hash: md5
-      md5: 9dc2944a7d0a1d38a1434c34fc0ee9be
+      md5: fb9a97808d44c0c23892482de2dacea5
       size: 556798
     params:
       params.yaml:
@@ -172,7 +172,7 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: 52016f0c8faef2d9a4f5842d47cfdb16
+      md5: d89a4f3d56fd8d9c906c27cec1a72ce2
       size: 29
   export:
     cmd: python -m export
@@ -195,7 +195,7 @@ stages:
       size: 20348
     - path: outputs/model.pt
       hash: md5
-      md5: 9dc2944a7d0a1d38a1434c34fc0ee9be
+      md5: fb9a97808d44c0c23892482de2dacea5
       size: 556798
     params:
       params.yaml:
@@ -252,9 +252,9 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 61a18f6dc831b1e2e0c3f8b9b6f5dfea
-      size: 490888
+      md5: 658afdd2fafb888a3d8ddefa8e0a5a55
+      size: 474189
     - path: outputs/out.npy
       hash: md5
-      md5: 12241f933d89de54b6e9455bf7e1e10d
+      md5: ca6f5d3288997dd897936aeb5deaa2a9
       size: 3200
