@@ -85,15 +85,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: b0c04a292c6f60ec6a0f0022496382a8
+      md5: 9b88914862029dff6d36e25fe58bbfad
       size: 61
     - path: outputs/model.pt
       hash: md5
-      md5: c8aced296fe04d33ab8e88e3e218f4ce
+      md5: 43c06d661f5ced9dd8b2873e5df3650a
       size: 553923
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 0e48405ebc479976461f7f86c984965f
+      md5: 2c2f3904045f16b2c1252bf4bf911a7d
       size: 859333
   eval:
     cmd: python -m eval
@@ -116,7 +116,7 @@ stages:
       size: 20431
     - path: outputs/model.pt
       hash: md5
-      md5: c8aced296fe04d33ab8e88e3e218f4ce
+      md5: 43c06d661f5ced9dd8b2873e5df3650a
       size: 553923
     params:
       params.yaml:
@@ -172,8 +172,8 @@ stages:
     outs:
     - path: metrics.yaml
       hash: md5
-      md5: a7b25cc94ffad119b09be7703a4e8aeb
-      size: 29
+      md5: f4656f2c770d92fbdd2802ea3b04d84a
+      size: 30
   export:
     cmd: python -m export
     deps:
@@ -195,7 +195,7 @@ stages:
       size: 20431
     - path: outputs/model.pt
       hash: md5
-      md5: c8aced296fe04d33ab8e88e3e218f4ce
+      md5: 43c06d661f5ced9dd8b2873e5df3650a
       size: 553923
     params:
       params.yaml:
@@ -252,11 +252,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: dbc3b2e3e51cc83e7b20081b294f7202
+      md5: aad3e9191dcc5c4d4157dd381d303785
       size: 489557
     - path: outputs/out.npy
       hash: md5
-      md5: 0910bfcfd9e046062d39932c19c84612
+      md5: 4c9ce61b593568bd7cfb2b12c5389b7e
       size: 3200
   build:
     cmd: $FINN/run-docker.sh build_custom $(pwd)
@@ -275,16 +275,16 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: dbc3b2e3e51cc83e7b20081b294f7202
+      md5: aad3e9191dcc5c4d4157dd381d303785
       size: 489557
     - path: outputs/out.npy
       hash: md5
-      md5: 0910bfcfd9e046062d39932c19c84612
+      md5: 4c9ce61b593568bd7cfb2b12c5389b7e
       size: 3200
     - path: transformation/
       hash: md5
-      md5: 3425cac011e65ba86bcf4f92a4247116.dir
-      size: 139404
+      md5: 6e86cfb094c08c17ad8628e94096ad92.dir
+      size: 133989
       nfiles: 16
     params:
       params.yaml:
@@ -495,10 +495,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 41fcd41fc1c983dffaaec649c1bae90a.dir
-      size: 133244620
-      nfiles: 3151
+      md5: f4fc151bb9bd5b628fd72bae766a6966.dir
+      size: 133015569
+      nfiles: 3093
     - path: resources.yaml
       hash: md5
-      md5: 771d1804f1b3434a28f865076b389662
+      md5: 031158bafe6f0c6c543041e55bb59c91
       size: 78
