@@ -51,6 +51,12 @@ from transformation.attention_heads import (
 )
 # Stream replication for outputs with multiple consumers
 from transformation.replicate_stream import InferReplicateStream
+# FINN dataflow builder configuration
+from finn.builder.build_dataflow_config import (
+    VerificationStepType, DataflowBuildConfig
+)
+# FINN verification after build/graph transformation steps
+from finn.builder.build_dataflow_steps import verify_step
 
 
 # Function running transformations necessary to clean up models containing
@@ -80,7 +86,7 @@ def step_tidy_up_pre_attention(model: ModelWrapper, _):
 
 
 # Variant of streamlining transformations adapted to attention operators
-def step_streamline_attention(model: ModelWrapper, _):
+def step_streamline_attention(model: ModelWrapper, cfg: DataflowBuildConfig):
     # Apply the set of standard streamlining transformations from finn to the
     # model
     model = model.transform(Streamline())
@@ -97,12 +103,21 @@ def step_streamline_attention(model: ModelWrapper, _):
     # Streamline again there should be more transformations enabled after moving
     # some nodes past forks
     model = model.transform(Streamline())
+
+    # If configured, run a verification of the transformed model on some sample
+    # inputs
+    if (VerificationStepType.STREAMLINED_PYTHON in
+            cfg._resolve_verification_steps()):  # noqa
+        verify_step(
+            model, cfg, "streamlined_attention_python", need_parent=False
+        )
+
     # Return the streamlined model
     return model
 
 
 # Streamlining transformations to be applied to residual branches
-def step_streamline_residual(model: ModelWrapper, _):
+def step_streamline_residual(model: ModelWrapper, cfg: DataflowBuildConfig):
     # Streamline the residual connections by moving scale factors past
     # elementwise add nodes
     model = model.transform(MoveLinearPastEltwiseAdd())  # noqa: Duplicate
@@ -119,12 +134,21 @@ def step_streamline_residual(model: ModelWrapper, _):
     model = model.transform(MoveScalarLinearPastInvariants())
     # And again to get the last floating-point Mul absorbed into thresholds
     model = model.transform(Streamline())
+
+    # If configured, run a verification of the transformed model on some sample
+    # inputs
+    if (VerificationStepType.STREAMLINED_PYTHON in
+            cfg._resolve_verification_steps()):  # noqa
+        verify_step(
+            model, cfg, "streamlined_residual_python", need_parent=False
+        )
+
     # Return the streamlined model
     return model
 
 
 # Streamlining transformation to be applied to the normalization layers
-def step_streamline_norms(model: ModelWrapper, _):
+def step_streamline_norms(model: ModelWrapper, cfg: DataflowBuildConfig):
     # Streamline transposed batch normalization (move transposes past the
     # scale-bias operator, so they can be collapsed afterward)
     model = model.transform(MoveTransposePastEltwise())
@@ -135,6 +159,13 @@ def step_streamline_norms(model: ModelWrapper, _):
     model = model.transform(RemoveIdentityTranspose())
     # This might have enabled more streamlining transformations
     model = model.transform(Streamline())
+
+    # If configured, run a verification of the transformed model on some sample
+    # inputs
+    if (VerificationStepType.STREAMLINED_PYTHON in
+            cfg._resolve_verification_steps()):  # noqa
+        verify_step(model, cfg, "streamlined_norms_python", need_parent=False)
+
     # Return the streamlined model
     return model
 

@@ -52,7 +52,7 @@ train:
   # Batch size for training
   batch_size: 512
   # Number of training epochs to run
-  epochs: 5
+  epochs: 100
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
@@ -60,7 +60,7 @@ train:
     # (Initial) Learning rate
     lr: 0.001
     # L2 regularization
-    weight_decay: 1e-05
+    weight_decay: 0.0
     # Coefficients used for computing running averages of gradient and its
     # square.
     # Note: Set according to Vaswani et al. 2017
