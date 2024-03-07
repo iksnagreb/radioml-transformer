@@ -8,18 +8,18 @@ model:
   # Number of attention block "layers"
   num_layers: 2
   # Enables/disables bias on linear layers
-  bias: True
+  bias: true
   # Size of the input/output embedding dimension
   emb_dim: 64
   # Size of the MLP layer dimension
   mlp_dim: 256
   # Type of normalization layer to use in the transformer blocks
   #   Options are: layer-norm, batch-norm and none
-  norm: "batch-norm"
+  norm: batch-norm
   # Dropout: probability of an element to be zeroed during training
   dropout: 0.0
   # Number of bits to use for quantized representation in "almost all layers"
-  bits: 3
+  bits: 4
   # Quantization bit-width at the model inputs: Typically this should
   # be higher than for most other layers, e.g., keep this at 8 bits
   input_bits: 8
@@ -31,7 +31,7 @@ model:
 # Training/Validation dataset configuration
 dataset:
   # Path to the dataset file
-  path: "data/GOLD_XYZ_OSC.0001_1024.hdf5"
+  path: data/GOLD_XYZ_OSC.0001_1024.hdf5
   # Optionally select only a subset of the classes
   #  classes: null
   # Optionally select only a subset of the available noise levels
@@ -41,7 +41,7 @@ dataset:
     -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
   ]
   # Splits the dataset into train/validation/evaluation subsets
-  splits: [ 0.80, 0.10, 0.10 ]  # 80%, 20%, 20% splits
+  splits: [ 0.80, 0.10, 0.10 ]  # 80%, 10%, 10% splits
   # Seed used for reproducible splitting of datasets
   seed: 12
   # Reshape the dataset to fit the expected embedding dimension of the model
@@ -56,7 +56,7 @@ train:
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
-    algorithm: "adam"
+    algorithm: adam
     # (Initial) Learning rate
     lr: 0.001
     # L2 regularization
@@ -69,19 +69,19 @@ train:
     # Note: Set according to Vaswani et al. 2017
     eps: 1.0e-9
   # Loss function to use
-  criterion: "cross-entropy"
+  criterion: cross-entropy
   # DataLoader keyword arguments
   loader:
     # Reshuffle data every epoch
-    shuffle: True
+    shuffle: true
     # Number of workers to use for loading the data in parallel
     num_workers: 10
     # Number of batches loaded in advance by each worker
     prefetch_factor: 4
     # Keep worker processes alive after consuming the dataset once
-    persistent_workers: True
+    persistent_workers: true
     # Drop the last batch if it is incomplete, i.e., smaller than the batch size
-    drop_last: True
+    drop_last: true
 # Evaluation hyperparameters
 eval:
   # Evaluation batch size - does not influence the result, just speeds up the
@@ -94,25 +94,25 @@ eval:
     # Number of batches loaded in advance by each worker
     prefetch_factor: 4
     # Do not drop the last batch if it is incomplete
-    drop_last: False
+    drop_last: false
 # Model to ONNX export hyperparameters
 export:
   # Version of the default ONNX opset
   opset_version: 14
   # Apply the constant-folding optimization
-  do_constant_folding: True
+  do_constant_folding: true
 # FPGA dataflow accelerator build configuration
 build:
   # FINN compiler configurations
   finn:
     # Directory to store the build outputs
-    output_dir: "outputs/build"
+    output_dir: outputs/build
     # Target clock period, i.e., inverse of target frequency
     synth_clk_period_ns: 10.0
     # Board to target with the build
-    board: "RFSoC2x2"
+    board: RFSoC2x2
     # Path to folding configuration JSON file
-    folding_config_file: "folding.json"
+    folding_config_file: folding.json
     #  # Optional: Start the build from a specific step
     #  start_step: "step_tidy_up_pre_attention"
     #  # Optional: Stop the build after a specific step
@@ -122,6 +122,6 @@ build:
     # Path to the report file to be summarized
     # Note: remember to adjust the build directory when changing the config
     # above
-    report: "outputs/build/report/post_synth_resources.json"
+    report: outputs/build/report/post_synth_resources.json
     # Filter the report rows
-    filter: "(top)"
+    filter: (top)
