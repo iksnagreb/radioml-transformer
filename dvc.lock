@@ -283,9 +283,9 @@ stages:
       size: 3200
     - path: transformation/
       hash: md5
-      md5: f8679936937d7c313155545c750c9344.dir
-      size: 134197
-      nfiles: 16
+      md5: 442571afa6ba9d6d6b1cfcd26f02d34a.dir
+      size: 104396
+      nfiles: 8
     params:
       params.yaml:
         build:
@@ -495,8 +495,8 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: a2229defccc8e243c2741d613c8581aa.dir
-      size: 144351875
+      md5: 388223df06e3b9e7ace6409394572280.dir
+      size: 144349685
       nfiles: 6800
     - path: resources.yaml
       hash: md5
