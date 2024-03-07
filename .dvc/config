@@ -1,0 +1,9 @@
+[core]
+    remote = public
+['remote "upstream"']
+    url = webdavs://uni-paderborn.sciebo.de/public.php/webdav
+    user = sN90o4duMn4n2AT
+['remote "public"']
+    url = webdavs://uni-paderborn.sciebo.de/public.php/webdav
+    user = 0je9wJoXhgeDNyu
+    password = ""
