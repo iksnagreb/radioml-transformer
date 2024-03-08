@@ -30,6 +30,10 @@ stages:
     plots:
       # Curves of training and validation loss per epoch
       - loss.yaml:
+          # Explicitly plot the validation loss
+          y: valid
+          # Give a more readable title to the plot
+          title: "Validation Loss per Epoch"
           # Track via git, not dvc cache
           cache: false
   # Stage running model evaluation after training to produce accuracy metrics
@@ -60,6 +64,31 @@ stages:
       - metrics.yaml:
           # Track via git, not dvc cache
           cache: false
+    # Plots produced by this stage
+    plots:
+      # Accuracy grouped by Signal-to-Noise Ratio
+      - accuracy-per-snr.yaml:
+          # Use the Signal-to_noise Ration levels as x-axis
+          x: snr
+          # Plot accuracy per SNR level as y-axis
+          y: acc
+          # Give a more readable title to the plot
+          title: "Accuracy per SNR"
+          # Track via git, not dvc cache
+          cache: false
+      # Confusion matrix of predicted vs. true classes
+      - classes.csv:
+          # Use true class label as x-axis
+          x: cls
+          # Use the predicted class label as y-axis
+          y: prediction
+          # Use the confusion matrix plot template
+          template: confusion
+          # Give a more readable title to the plot
+          title: "Confusion Matrix"
+          # Do not track via git as this file might be quite large, up to some
+          # megabytes
+          cache: true
   # Stage exporting the trained model to ONNX
   export:
     # Stage runs the export script as the command
@@ -122,7 +151,7 @@ stages:
     outs:
       # Track everything from the build directory
       - ${build.finn.output_dir}/
-        # Metrics produced by this stage
+    # Metrics produced by this stage
     metrics:
       # Resource utilization metrics
       - resources.yaml:

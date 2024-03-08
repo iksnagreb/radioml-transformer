@@ -108,8 +108,8 @@ stages:
       size: 5248
     - path: eval.py
       hash: md5
-      md5: eefeb112898d66ce829dd1e5eb274221
-      size: 3354
+      md5: e8f80bbe6570bbd488a5f12017d608b3
+      size: 4690
     - path: model.py
       hash: md5
       md5: 05da8b7f0605e46fa2928d36a8e7d4dd
@@ -170,6 +170,14 @@ stages:
           num_classes: 24
         seed: 12
     outs:
+    - path: accuracy-per-snr.yaml
+      hash: md5
+      md5: ace54a559350bbc5ee583b450d753f60
+      size: 699
+    - path: classes.csv
+      hash: md5
+      md5: 27af40ca2a2d748bcee5d267fca111cb
+      size: 958840
     - path: metrics.yaml
       hash: md5
       md5: 465e1f1e074e73da450b75ca9c8d37f9

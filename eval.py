@@ -56,10 +56,27 @@ def evaluate(model, dataset, batch_size, loader):  # noqa: Shadows model
 
     # Convert list of records to pandas data frame to do statistics to it
     results = pd.DataFrame.from_records(results)
+
+    # Computes the prediction accuracy over the class and predicted class of a
+    # data frame or a group of a data frame
+    def accuracy(group):
+        return accuracy_score(*group[["cls", "prediction"]].T.values)
+
+    # Accuracy per Signal-to-Noise ratio
+    accuracy_per_snr = results.groupby("snr").apply(  # noqa: Shadows
+        accuracy, include_groups=False
+    )
+    # Properly format this as a dictionary which can be understood for plotting
+    # by dvc
+    accuracy_per_snr = [  # noqa: Shadows from outer scope
+        {"snr": snr, "acc": acc} for snr, acc in accuracy_per_snr.items()
+    ]
+
+    # Collect true and predicted labels for creating a confusion matrix plot
+    classes = results[["cls", "prediction"]]  # noqa: Shadows from outer scope
+
     # Compute the classification accuracy over the evaluation dataset
-    return {
-        "accuracy": accuracy_score(*results[["cls", "prediction"]].T.values)
-    }
+    return {"accuracy": accuracy(results)}, accuracy_per_snr, classes
 
 
 # Script entrypoint
@@ -73,8 +90,21 @@ if __name__ == "__main__":
     # Load the trained model parameters
     model.load_state_dict(torch.load("outputs/model.pt"))
     # Pass the model and the evaluation configuration to the evaluation loop
-    metrics = evaluate(model, dataset=params["dataset"], **params["eval"])
+    metrics, accuracy_per_snr, classes = evaluate(
+        model, dataset=params["dataset"], **params["eval"]
+    )
     # Dump the metrics dictionary as yaml
     with open("metrics.yaml", "w") as file:
         # Dictionary which can be dumped into YAML
         yaml.safe_dump(metrics, file)
+    # Save the accuracy grouped per SNR into a separate yaml to serve this as a
+    # plot
+    with open("accuracy-per-snr.yaml", "w") as file:
+        # Dictionary which can be dumped into YAML
+        yaml.safe_dump({"Accuracy per SNR": accuracy_per_snr}, file)
+    # Save the confusion matrix into a separate yaml to serve this as a
+    # plot
+    #   Note: Save this as CSV, as YAML stores excessive metadata
+    with open("classes.csv", "w") as file:
+        # Dictionary which can be dumped into YAML
+        file.write(classes.to_csv(index=False))
