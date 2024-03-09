@@ -65,7 +65,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_1": {
@@ -75,7 +75,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_2": {
@@ -85,7 +85,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_3": {
@@ -95,7 +95,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_4": {
@@ -105,7 +105,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_5": {
@@ -115,7 +115,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_6": {
@@ -125,7 +125,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_7": {
@@ -135,7 +135,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_8": {
@@ -145,7 +145,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_9": {
@@ -155,7 +155,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_10": {
@@ -165,7 +165,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_11": {
@@ -175,7 +175,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_12": {
@@ -185,7 +185,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_13": {
@@ -195,7 +195,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_14": {
@@ -205,7 +205,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "ScaledDotProductAttention_15": {
@@ -215,7 +215,7 @@
       256
     ],
     "outFIFODepths": [
-      256
+      2
     ]
   },
   "AddStreams_Batch_0": {

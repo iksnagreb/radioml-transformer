@@ -61,7 +61,7 @@ stages:
           dropout: 0.0
           bits: 4
           input_bits: 8
-          output_bits: 6
+          output_bits: 7
           num_classes: 24
         seed: 12
         train:
@@ -85,15 +85,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: b2531ebc096301f530d236d3c5fac7ec
-      size: 5494
+      md5: 9b1caf6f80e8edf4259befd0ac91122c
+      size: 5487
     - path: outputs/model.pt
       hash: md5
-      md5: e4a604db57f42a93f8760b96000c3e7b
+      md5: e68610397d1222c978b4a24228860a93
       size: 553923
     - path: outputs/optimizer.pt
       hash: md5
-      md5: c30c5270e94ca547255e94e97aad68fd
+      md5: d7837eaa8d3d9f9ce57b60b71d5d200f
       size: 859333
   eval:
     cmd: python -m eval
@@ -116,7 +116,7 @@ stages:
       size: 20431
     - path: outputs/model.pt
       hash: md5
-      md5: e4a604db57f42a93f8760b96000c3e7b
+      md5: e68610397d1222c978b4a24228860a93
       size: 553923
     params:
       params.yaml:
@@ -166,21 +166,21 @@ stages:
           dropout: 0.0
           bits: 4
           input_bits: 8
-          output_bits: 6
+          output_bits: 7
           num_classes: 24
         seed: 12
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: d7637dcb9c5f05c5ffff4b024d3abfe9
+      md5: c742e8295e7b0ff75a119030cb7281e4
       size: 697
     - path: classes.csv
       hash: md5
-      md5: 330d0d3db8b9455b55d81905a5735020
-      size: 962782
+      md5: 873225a168a4b60ca1fdb7d1192b9ae8
+      size: 963106
     - path: metrics.yaml
       hash: md5
-      md5: 5f38e2633260318aa0470a1a55426c64
+      md5: bdd00b4011431ee7c40b271cb5359f1e
       size: 29
   export:
     cmd: python -m export
@@ -203,7 +203,7 @@ stages:
       size: 20431
     - path: outputs/model.pt
       hash: md5
-      md5: e4a604db57f42a93f8760b96000c3e7b
+      md5: e68610397d1222c978b4a24228860a93
       size: 553923
     params:
       params.yaml:
@@ -250,7 +250,7 @@ stages:
           dropout: 0.0
           bits: 4
           input_bits: 8
-          output_bits: 6
+          output_bits: 7
           num_classes: 24
         seed: 12
     outs:
@@ -260,11 +260,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 8aed697a12906c1ce0101da0266665b4
+      md5: 6dd2c3726f5fbfa02155c44e267ca606
       size: 489557
     - path: outputs/out.npy
       hash: md5
-      md5: c8be2a26bd00c67c34ec60c4b21bcd5c
+      md5: 2493e3e1c7f42394fd0cfb2fdd775b50
       size: 3200
   build:
     cmd: $FINN/run-docker.sh build_custom $(pwd)
@@ -283,11 +283,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 8aed697a12906c1ce0101da0266665b4
+      md5: 6dd2c3726f5fbfa02155c44e267ca606
       size: 489557
     - path: outputs/out.npy
       hash: md5
-      md5: c8be2a26bd00c67c34ec60c4b21bcd5c
+      md5: 2493e3e1c7f42394fd0cfb2fdd775b50
       size: 3200
     - path: transformation/
       hash: md5
@@ -378,112 +378,112 @@ stages:
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_1:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_10:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_11:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_12:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_13:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_14:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_15:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_2:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_3:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_4:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_5:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_6:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_7:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_8:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         ScaledDotProductAttention_9:
           inFIFODepths:
           - 256
           - 256
           - 256
           outFIFODepths:
-          - 256
+          - 2
         Thresholding_Batch_0:
           PE: 2
         Thresholding_Batch_1:
@@ -503,10 +503,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 1ec02ed12619afeca3f0e6e0f441f19c.dir
-      size: 144992090
-      nfiles: 6846
+      md5: 6d42398b7b06cf0a3a1a9f0aa79d4c89.dir
+      size: 143575241
+      nfiles: 6652
     - path: resources.yaml
       hash: md5
-      md5: df3fdb29e605209ccd1e1abef1a4beea
+      md5: 19fb528d6ddeb5fb586301f5eb699bd2
       size: 78
