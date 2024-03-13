@@ -6,7 +6,8 @@ from qonnx.transformation.general import (
     GiveReadableTensorNames,
     RemoveUnusedTensors,
     RemoveStaticGraphInputs,
-    GiveUniqueParameterTensors
+    GiveUniqueParameterTensors,
+    ConvertDivToMul
 )
 # QONNX graph transformations for inferring datatypes and shapes
 from qonnx.transformation.infer_datatypes import InferDataTypes
@@ -20,9 +21,14 @@ from finn.transformation.streamline import Streamline
 from finn.transformation.streamline.absorb import AbsorbAddIntoMultiThreshold
 # Reorder operations
 from finn.transformation.streamline.reorder import (
+    MoveMulPastFork,
     MoveLinearPastFork,
     MoveLinearPastEltwiseAdd,
     MoveScalarLinearPastInvariants
+)
+# Collapse consecutive operations of the same type
+from finn.transformation.streamline.collapse_repeated import (
+    CollapseRepeatedMul
 )
 # FINN transformation converting ONNX nodes to HLS custom operators
 from finn.transformation.fpgadataflow.convert_to_hls_layers import (
@@ -159,12 +165,44 @@ def step_streamline_norms(model: ModelWrapper, cfg: DataflowBuildConfig):
     model = model.transform(RemoveIdentityTranspose())
     # This might have enabled more streamlining transformations
     model = model.transform(Streamline())
+    # We need a custom streamlining step to enable streamlining through certain
+    # fork-nodes Note: This transform is part of finn, but not included in the
+    # standard streamlining transformations
+    model = model.transform(MoveLinearPastFork())
+    # This might have enabled more streamlining transformations
+    model = model.transform(Streamline())
 
     # If configured, run a verification of the transformed model on some sample
     # inputs
     if (VerificationStepType.STREAMLINED_PYTHON in
             cfg._resolve_verification_steps()):  # noqa
         verify_step(model, cfg, "streamlined_norms_python", need_parent=False)
+
+    # Return the streamlined model
+    return model
+
+
+# Streamlining transformation to be applied to the positional encoding layer
+def step_streamline_positional(model: ModelWrapper, cfg: DataflowBuildConfig):
+    # There is probably a division in front of the quantized positional
+    # encoding, which is exactly the inverse of the multiplication in front of
+    # that: The are the matching scale factors of the shared input quantizer of
+    # input and positional encoding. Convert the division to multiplication, so
+    # these two can be merged.
+    model = model.transform(ConvertDivToMul())
+    # Merge the quantization scales of shared input quantizers
+    model = model.transform(CollapseRepeatedMul())
+    # Push scalar multiplications, probably scale factors of quantizers, into
+    # the branches of a fork
+    model = model.transform(MoveMulPastFork())
+
+    # If configured, run a verification of the transformed model on some sample
+    # inputs
+    if (VerificationStepType.STREAMLINED_PYTHON in
+            cfg._resolve_verification_steps()):  # noqa
+        verify_step(
+            model, cfg, "streamlined_positional_python", need_parent=False
+        )
 
     # Return the streamlined model
     return model
@@ -212,6 +250,14 @@ def step_tidy_up_post_attention(model: ModelWrapper, _):
     model = model.transform(RemoveIdentityTranspose())
     # Squeezing might enable absorbing adds into thresholds once again
     model = model.transform(AbsorbAddIntoMultiThreshold())
+
+    # Squeezing might enable some more streamlining transformations once again
+    model = model.transform(MoveLinearPastEltwiseAdd())  # noqa: Duplicate
+    model = model.transform(MoveLinearPastFork())
+    model = model.transform(MoveScalarLinearPastInvariants())
+    # Do the normal streamlining flow once again
+    model = model.transform(Streamline())
+
     # Clean up the names for debugging
     model = model.transform(GiveUniqueNodeNames())
     model = model.transform(GiveReadableTensorNames())

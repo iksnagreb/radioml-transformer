@@ -116,6 +116,18 @@ class TransformerBlock(torch.nn.Module):
         # Initialize the PyTorch Module superclass
         super().__init__()
 
+        # Input quantizer to the scaled dot-product attention operations, shared
+        # by queries, keys and values inputs. It is important to have this
+        # quantizer separate and not preceding the fork node of the residual
+        # branches to avoid consecutive quantizers in the skip branch.
+        # Note: For some reason it seems not to be possible to use the
+        #   in_proj_input_quant of the attention operator
+        self.sdp_input_quant = QuantIdentity(
+            # Quantize at the output
+            act_quant=act_quantizer(bits, _signed=True),
+            # Pass quantization information on to the next layer.
+            return_quant_tensor=True
+        )
         # Quantized scaled dot-product attention operator
         self.sdp = QuantMultiheadAttention(
             # Size of the embedding dimension (input and output)
@@ -148,9 +160,7 @@ class TransformerBlock(torch.nn.Module):
             # Quantize the bias of the input projections as configured
             in_proj_bias_quant=bias_quantizer(bits, _signed=True),
             # No quantization in front of the input projections as this is
-            # either done by the output quantization of the preceding attention
-            # block (see norm_mlp) or in case of the first layer by the separate
-            # input quantization
+            # either done by a standalone quantizer preceding the whole block
             in_proj_input_quant=None,
 
             # Quantize the output projections weights as configured
@@ -192,17 +202,20 @@ class TransformerBlock(torch.nn.Module):
         self.norm_sdp = torch.nn.Sequential(
             # Select the normalization layer implementation
             get_norm(key=norm, normalized_shape=emb_dim),
-            # Quantize the LayerNorm outputs
+            # No quantizer to avoid consecutive quantizer in the MLP residual
+            # branch. See input quantizer in front of the first MLP layer.
+        )
+
+        # Quantized MLP following the scaled dot-product attention
+        self.mlp = torch.nn.Sequential(
+            # Quantize the inputs to the MLP block. Placed here to not have this
+            # at the input of the residual branch.
             QuantIdentity(
                 # Quantize at the output
                 act_quant=act_quantizer(bits, _signed=True),
                 # Pass quantization information on to the next layer.
                 return_quant_tensor=True
-            )
-        )
-
-        # Quantized MLP following the scaled dot-product attention
-        self.mlp = torch.nn.Sequential(
+            ),
             # First mlp layer projecting to the mlp dimension
             QuantLinear(
                 # Inputs have the size of the attention embedding dimension
@@ -218,8 +231,8 @@ class TransformerBlock(torch.nn.Module):
                 # Quantize the bias to the same representation as all other
                 # layers
                 bias_quant=bias_quantizer(bits, _signed=True),
-                # No input quantizer as this is directly preceded by the output
-                # quantizer of the norm layer above, following the attention
+                # No input quantizer as this is directly preceded by a
+                # standalone quantizer
                 input_quant=None,
                 # Not output quantizer as this is directly followed by a
                 # quantized ReLU activation taking care of quantization
@@ -286,20 +299,17 @@ class TransformerBlock(torch.nn.Module):
         self.norm_mlp = torch.nn.Sequential(
             # Select the normalization layer implementation
             get_norm(key=norm, normalized_shape=emb_dim),
-            # Quantize the LayerNorm outputs
-            QuantIdentity(
-                # Quantize at the output
-                act_quant=act_quantizer(bits, _signed=True),
-                # Pass quantization information on to the next layer.
-                return_quant_tensor=True
-            )
+            # No quantizer to avoid consecutive quantizer in the SDP residual
+            # branch
         )
 
     # Forward pass through the transformer block
     def forward(self, x):
+        # Quantize the input to the attention block
+        q = self.sdp_input_quant(x)
         # Scaled dot-product attention with residual branch and normalization
         # Note: No attention mask for now
-        x = self.norm_sdp(self.residual_sdp(x, self.sdp(x, x, x)[0]))
+        x = self.norm_sdp(self.residual_sdp(x, self.sdp(q, q, q)[0]))
         # MLP layer with residual branch and normalization
         return self.norm_mlp(self.residual_mlp(x, self.mlp(x)))
 
@@ -377,10 +387,10 @@ class RadioMLTransformer(torch.nn.Module):
         self.pos = QuantBinaryPositionalEncoding(
             # Quantize the inputs to the positional encoding to the same
             # bit-width as the input
-            input_quant=None,
+            input_quant=act_quantizer(input_bits, _signed=True),
             # Quantize the sum of input and positional encoding to the same
             # bit-width as the input
-            output_quant=act_quantizer(input_bits, _signed=True),
+            output_quant=None,
             # Pass quantization information on to the next layer
             return_quant_tensor=True
         )
@@ -391,14 +401,6 @@ class RadioMLTransformer(torch.nn.Module):
                 num_heads, emb_dim, mlp_dim, bias, norm, dropout, bits
             ) for _ in range(num_layers)
         ])
-
-        # Global average pooling along the sequence dimension
-        class GlobalAveragePool(torch.nn.Module):  # noqa: Unused
-            # Forward pass averaging the feature map
-            def forward(self, x):  # noqa: May be static
-                # Compute mean along the sequence dimension, which for
-                # batch-first layout is dim=1
-                return torch.mean(x, dim=1, keepdim=False)
 
         # Classification head attached at the end
         self.cls_head = torch.nn.Sequential(
@@ -416,10 +418,9 @@ class RadioMLTransformer(torch.nn.Module):
                 # Quantize the bias to the same representation as all other
                 # layers
                 bias_quant=bias_quantizer(output_bits, _signed=True),
-                # Without pooling, this is preceded by the quantizer of the norm
-                # layer following the last attention block MLP, thus no further
-                # input quantizer is needed
-                input_quant=None,
+                # Quantize the inputs to the classification head to the same
+                # bit-width as the trunk of the model
+                input_quant=act_quantizer(bits, _signed=True),
                 # Model output quantization is configured separately form all
                 # other quantizers
                 output_quant=act_quantizer(output_bits, _signed=True),

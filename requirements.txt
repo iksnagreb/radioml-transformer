@@ -1,4 +1,4 @@
-dvc~=3.44.0
+dvc[webdav]~=3.44.0
 PyYAML~=6.0.1
 tqdm~=4.66.2
 pandas~=2.2.0
