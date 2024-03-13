@@ -1,6 +1,6 @@
 {
   "Defaults": {
-    "outFIFODepths": [
+    "inFIFODepths": [
       [
         2,
         2,
@@ -13,7 +13,7 @@
       ],
       "all"
     ],
-    "inFIFODepths": [
+    "outFIFODepths": [
       [
         2,
         2,
@@ -38,18 +38,6 @@
         "MatrixVectorActivation"
       ]
     ],
-    "SeqFold": [
-      32,
-      [
-        "ScaledDotProductAttention"
-      ]
-    ],
-    "EmbFold": [
-      1,
-      [
-        "ScaledDotProductAttention"
-      ]
-    ],
     "ram_style": [
       "block",
       [
@@ -58,205 +46,33 @@
       ]
     ]
   },
-  "ScaledDotProductAttention_0": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_1": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_2": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_3": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_4": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_5": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_6": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_7": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_8": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_9": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_10": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_11": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_12": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_13": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_14": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
-  "ScaledDotProductAttention_15": {
-    "inFIFODepths": [
-      256,
-      256,
-      256
-    ],
-    "outFIFODepths": [
-      2
-    ]
-  },
   "AddStreams_Batch_0": {
-    "PE": 2,
     "inFIFODepths": [
-      1024,
-      1024
+      256,
+      256
     ],
-    "outFIFODepths": [
-      2
-    ]
+    "PE": 2
   },
   "AddStreams_Batch_1": {
-    "PE": 2,
     "inFIFODepths": [
-      1024,
-      1024
+      256,
+      256
     ],
-    "outFIFODepths": [
-      2
-    ]
+    "PE": 2
   },
   "AddStreams_Batch_2": {
-    "PE": 2,
     "inFIFODepths": [
-      1024,
-      1024
+      256,
+      256
     ],
-    "outFIFODepths": [
-      2
-    ]
+    "PE": 2
   },
   "AddStreams_Batch_3": {
-    "PE": 2,
     "inFIFODepths": [
-      1024,
-      1024
+      256,
+      256
     ],
-    "outFIFODepths": [
-      2
-    ]
+    "PE": 2
   },
   "Thresholding_Batch_0": {
     "PE": 2
@@ -281,5 +97,152 @@
   },
   "Thresholding_Batch_7": {
     "PE": 2
+  },
+  "Thresholding_Batch_8": {
+    "PE": 2
+  },
+  "ScaledDotProductAttention_0": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_1": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_2": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_3": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_4": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_5": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_6": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_7": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_8": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_9": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_10": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_11": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_12": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_13": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_14": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
+  },
+  "ScaledDotProductAttention_15": {
+    "inFIFODepths": [
+      256,
+      256,
+      256
+    ],
+    "SeqFold": 32,
+    "EmbFold": 1
   }
 }
