@@ -13,8 +13,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: 00cbe7ac96769c66bf2f78123793ee12
-      size: 20623
+      md5: 780e43d0c1993b3fa302260166784d35
+      size: 20925
     - path: train.py
       hash: md5
       md5: dc1c300ef1d3f80e7641ac496bfb9993
@@ -85,16 +85,16 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 9f115e76932eff63f0d986f7387c659c
-      size: 5483
+      md5: 28718f384c95297a560c7413932b1501
+      size: 5478
     - path: outputs/model.pt
       hash: md5
-      md5: c9bdb761bcff8583730fae772ff23a06
-      size: 556798
+      md5: e330119695cee24f02f8c21fd884432b
+      size: 552806
     - path: outputs/optimizer.pt
       hash: md5
-      md5: fe592a0a5bee7c2b873f7f2bba5acce4
-      size: 860101
+      md5: f7145aa5ed7d522b45487d1ac26ece46
+      size: 849413
   eval:
     cmd: python -m eval
     deps:
@@ -112,12 +112,12 @@ stages:
       size: 4690
     - path: model.py
       hash: md5
-      md5: 00cbe7ac96769c66bf2f78123793ee12
-      size: 20623
+      md5: 780e43d0c1993b3fa302260166784d35
+      size: 20925
     - path: outputs/model.pt
       hash: md5
-      md5: c9bdb761bcff8583730fae772ff23a06
-      size: 556798
+      md5: e330119695cee24f02f8c21fd884432b
+      size: 552806
     params:
       params.yaml:
         dataset:
@@ -172,15 +172,15 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 08c0e792c51c17bfee37c56b3d2a09f8
-      size: 698
+      md5: a278aacb6cd3fa75207f1554793203a1
+      size: 696
     - path: classes.csv
       hash: md5
-      md5: 7901a13f707a7de4c69cb014fef456e6
-      size: 961217
+      md5: 63b7e4cfbd3813a4928bee5ebf32702f
+      size: 961757
     - path: metrics.yaml
       hash: md5
-      md5: 866d35bec9f38e61a897f80c4750d8db
+      md5: 7d92f330ad81b1daa96edcd9545c7e9c
       size: 29
   export:
     cmd: python -m export
@@ -195,16 +195,16 @@ stages:
       size: 5248
     - path: export.py
       hash: md5
-      md5: 8f513326009bb56d1faabc12a65ef341
-      size: 2209
+      md5: f65e50e89b200305920fc7512d115872
+      size: 4487
     - path: model.py
       hash: md5
-      md5: 00cbe7ac96769c66bf2f78123793ee12
-      size: 20623
+      md5: 780e43d0c1993b3fa302260166784d35
+      size: 20925
     - path: outputs/model.pt
       hash: md5
-      md5: c9bdb761bcff8583730fae772ff23a06
-      size: 556798
+      md5: e330119695cee24f02f8c21fd884432b
+      size: 552806
     params:
       params.yaml:
         dataset:
@@ -260,11 +260,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 66126afe69240417e90077cbdccddf56
-      size: 496183
+      md5: 33ca21df1a42ed71dc1a83a0cf586662
+      size: 494647
     - path: outputs/out.npy
       hash: md5
-      md5: 0de546c19f87f79e603069449131e489
+      md5: be15d8171dfbcf5d52196db9622131aa
       size: 3200
   build:
     cmd: $FINN/run-docker.sh build_custom $(pwd)
@@ -283,11 +283,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 66126afe69240417e90077cbdccddf56
-      size: 496183
+      md5: 33ca21df1a42ed71dc1a83a0cf586662
+      size: 494647
     - path: outputs/out.npy
       hash: md5
-      md5: 0de546c19f87f79e603069449131e489
+      md5: be15d8171dfbcf5d52196db9622131aa
       size: 3200
     - path: transformation/
       hash: md5
@@ -491,10 +491,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 4c0dc80eb138dd58b395ab52ea4f0089.dir
-      size: 145443319
-      nfiles: 6623
+      md5: c6ca1e63d906a3668c74afc808c2a9c2.dir
+      size: 145911740
+      nfiles: 6847
     - path: resources.yaml
       hash: md5
-      md5: de8d511056c34ae9d80e57ed4a896b1c
+      md5: e88296f7a14af29421e66b8bdc4467ac
       size: 78

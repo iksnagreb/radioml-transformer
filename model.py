@@ -93,12 +93,18 @@ def get_norm(key, normalized_shape):
     norms = {
         # PyTorch default layer normalization. Needs to know the shape of the
         # feature map to be normalized
-        "layer-norm": torch.nn.LayerNorm(normalized_shape=normalized_shape),
+        "layer-norm": torch.nn.LayerNorm(
+            # Note: Disable affine parameters as potential negative scale causes
+            # streamlining issues later
+            normalized_shape=normalized_shape, elementwise_affine=False
+        ),
         # PyTorch default 1-dimensional batch normalization. Needs to transpose
         # embedding and sequence dimension to normalized over the embedding
         # dimension, which is expected to be second.
         "batch-norm": torch.nn.Sequential(
-            Transpose(), torch.nn.LazyBatchNorm1d(), Transpose()
+            # Note: Disable affine parameters as potential negative scale causes
+            # streamlining issues later
+            Transpose(), torch.nn.LazyBatchNorm1d(affine=False), Transpose()
         ),
         # No normalization by a PyTorch built-in identity layer. Should not
         # appear in the graph.
