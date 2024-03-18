@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   train:
-    cmd: python -m train
+    cmd: PARTITION=gpu bash run.sh python -m train
     deps:
     - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
       hash: md5
@@ -15,6 +15,14 @@ stages:
       hash: md5
       md5: 780e43d0c1993b3fa302260166784d35
       size: 20925
+    - path: noctua.sh
+      hash: md5
+      md5: f3e8cc342b63cddcd2e07bfe63f6518c
+      size: 1832
+    - path: run.sh
+      hash: md5
+      md5: 6e3e34149c16795c5a8424a51bdbf5f8
+      size: 1616
     - path: train.py
       hash: md5
       md5: dc1c300ef1d3f80e7641ac496bfb9993
@@ -85,15 +93,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 28718f384c95297a560c7413932b1501
-      size: 5478
+      md5: 98d4a3f3d17bd1cd200ceb315b96cadf
+      size: 5483
     - path: outputs/model.pt
       hash: md5
-      md5: e330119695cee24f02f8c21fd884432b
+      md5: b6f540db088e8eb12ae8adc2baab703a
       size: 552806
     - path: outputs/optimizer.pt
       hash: md5
-      md5: f7145aa5ed7d522b45487d1ac26ece46
+      md5: 2e57b0ae3d230e97d4d3667567946078
       size: 849413
   eval:
     cmd: python -m eval
@@ -108,15 +116,15 @@ stages:
       size: 5248
     - path: eval.py
       hash: md5
-      md5: e8f80bbe6570bbd488a5f12017d608b3
-      size: 4690
+      md5: 1f5c91d220bb950f4682b6822d76b754
+      size: 4720
     - path: model.py
       hash: md5
       md5: 780e43d0c1993b3fa302260166784d35
       size: 20925
     - path: outputs/model.pt
       hash: md5
-      md5: e330119695cee24f02f8c21fd884432b
+      md5: b6f540db088e8eb12ae8adc2baab703a
       size: 552806
     params:
       params.yaml:
@@ -172,16 +180,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: a278aacb6cd3fa75207f1554793203a1
-      size: 696
+      md5: 205eb1ec1c0e60655fd9fea4dbf81281
+      size: 699
+    - path: accuracy.yaml
+      hash: md5
+      md5: 40ff349dc4cc46df097971a44f4befd1
+      size: 29
     - path: classes.csv
       hash: md5
-      md5: 63b7e4cfbd3813a4928bee5ebf32702f
-      size: 961757
-    - path: metrics.yaml
-      hash: md5
-      md5: 7d92f330ad81b1daa96edcd9545c7e9c
-      size: 29
+      md5: e2c29aefad90c5d0d9943c8f92be311c
+      size: 961153
   export:
     cmd: python -m export
     deps:
@@ -195,15 +203,15 @@ stages:
       size: 5248
     - path: export.py
       hash: md5
-      md5: f65e50e89b200305920fc7512d115872
-      size: 4487
+      md5: b3c309677e1e881ca22d31758c7e84e9
+      size: 4507
     - path: model.py
       hash: md5
       md5: 780e43d0c1993b3fa302260166784d35
       size: 20925
     - path: outputs/model.pt
       hash: md5
-      md5: e330119695cee24f02f8c21fd884432b
+      md5: b6f540db088e8eb12ae8adc2baab703a
       size: 552806
     params:
       params.yaml:
@@ -260,14 +268,14 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 33ca21df1a42ed71dc1a83a0cf586662
+      md5: fffe369cccd945ace529f92ab01297dc
       size: 494647
     - path: outputs/out.npy
       hash: md5
-      md5: be15d8171dfbcf5d52196db9622131aa
+      md5: e42d23b0ce2e4b8d16263ff72532bc5d
       size: 3200
   build:
-    cmd: $FINN/run-docker.sh build_custom $(pwd)
+    cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
     deps:
     - path: build.py
       hash: md5
@@ -277,18 +285,26 @@ stages:
       hash: md5
       md5: 6c4079d603e65b52bc8478ed96244fc9
       size: 11844
+    - path: noctua.sh
+      hash: md5
+      md5: f3e8cc342b63cddcd2e07bfe63f6518c
+      size: 1832
     - path: outputs/inp.npy
       hash: md5
       md5: 6c2d27154ce5742857957445779bbe44
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 33ca21df1a42ed71dc1a83a0cf586662
+      md5: fffe369cccd945ace529f92ab01297dc
       size: 494647
     - path: outputs/out.npy
       hash: md5
-      md5: be15d8171dfbcf5d52196db9622131aa
+      md5: e42d23b0ce2e4b8d16263ff72532bc5d
       size: 3200
+    - path: run.sh
+      hash: md5
+      md5: 6e3e34149c16795c5a8424a51bdbf5f8
+      size: 1616
     - path: transformation/
       hash: md5
       md5: 442571afa6ba9d6d6b1cfcd26f02d34a.dir
@@ -491,10 +507,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: c6ca1e63d906a3668c74afc808c2a9c2.dir
-      size: 145911740
-      nfiles: 6847
+      md5: c16d4d5f96d9d25b81a3655018821a23.dir
+      size: 145833556
+      nfiles: 6795
     - path: resources.yaml
       hash: md5
-      md5: e88296f7a14af29421e66b8bdc4467ac
+      md5: 609232ae3576f31079fd597747d17993
       size: 78

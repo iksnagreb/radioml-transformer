@@ -88,13 +88,13 @@ if __name__ == "__main__":
     # Create a new model instance according to the configuration
     model = RadioMLTransformer(**params["model"])
     # Load the trained model parameters
-    model.load_state_dict(torch.load("outputs/model.pt"))
+    model.load_state_dict(torch.load("outputs/model.pt", map_location="cpu"))
     # Pass the model and the evaluation configuration to the evaluation loop
     metrics, accuracy_per_snr, classes = evaluate(
         model, dataset=params["dataset"], **params["eval"]
     )
-    # Dump the metrics dictionary as yaml
-    with open("metrics.yaml", "w") as file:
+    # Dump the accuracy metrics dictionary as yaml
+    with open("accuracy.yaml", "w") as file:
         # Dictionary which can be dumped into YAML
         yaml.safe_dump(metrics, file)
     # Save the accuracy grouped per SNR into a separate yaml to serve this as a

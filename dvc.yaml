@@ -3,9 +3,13 @@ stages:
   # Stage running model training
   train:
     # Stage runs the training script as the command
-    cmd: python -m train
+    #   Note: On Noctua 2 this requires a GPU node for training
+    cmd: PARTITION=gpu bash run.sh python -m train
     # Data dependencies of this stage to determine when it needs to be rerun
     deps:
+      # Run scripts orchestrating the script execution (potentially via sbatch)
+      - run.sh
+      - noctua.sh
       # The training and evaluation dataset
       - ${dataset.path}
       # The model, dataset and training python scripts
@@ -61,7 +65,7 @@ stages:
     # Metrics produced by this stage
     metrics:
       # Classification accuracy over the evaluation dataset
-      - metrics.yaml:
+      - accuracy.yaml:
           # Track via git, not dvc cache
           cache: false
     # Plots produced by this stage
@@ -122,9 +126,12 @@ stages:
   build:
     # Command running a finn build of the model produced during export
     #   Note: More options should be provided via environment variables
-    cmd: $FINN/run-docker.sh build_custom $(pwd)
+    cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
     # Dependencies of this stage to determine when it needs to be rerun
     deps:
+      # Run scripts orchestrating the script execution (potentially via sbatch)
+      - run.sh
+      - noctua.sh
       # The script executing the stage
       - build.py
       # The custom build steps implemented in this package

@@ -97,7 +97,7 @@ if __name__ == "__main__":
     # Create a new model instance according to the configuration
     model = RadioMLTransformer(**params["model"])
     # Load the trained model parameters
-    model.load_state_dict(torch.load("outputs/model.pt"))
+    model.load_state_dict(torch.load("outputs/model.pt", map_location="cpu"))
     # Prevent export issue for missing affine normalization parameters
     model = patch_non_affine_norms(model)
     # Pass the model and the export configuration to the evaluation loop
