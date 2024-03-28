@@ -318,6 +318,7 @@ stages:
             synth_clk_period_ns: 10.0
             board: RFSoC2x2
             folding_config_file: folding.json
+            stitched_ip_gen_dcp: true
           metrics:
             report: outputs/build/report/post_synth_resources.json
             filter: (top)
@@ -507,9 +508,9 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: c16d4d5f96d9d25b81a3655018821a23.dir
-      size: 145833556
-      nfiles: 6795
+      md5: 66b93e4eba19a9b23311bd982546a4a2.dir
+      size: 2385394426
+      nfiles: 11371
     - path: resources.yaml
       hash: md5
       md5: 609232ae3576f31079fd597747d17993

@@ -113,6 +113,8 @@ build:
     board: RFSoC2x2
     # Path to folding configuration JSON file
     folding_config_file: folding.json
+    # Run synthesis to generate a .dcp for the stitched-IP output product
+    stitched_ip_gen_dcp: True
     #  # Optional: Start the build from a specific step
     #  start_step: "step_tidy_up_pre_attention"
     #  # Optional: Stop the build after a specific step
