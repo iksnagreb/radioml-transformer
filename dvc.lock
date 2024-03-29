@@ -326,23 +326,23 @@ stages:
       folding.json:
         AddStreams_Batch_0:
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           PE: 2
         AddStreams_Batch_1:
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           PE: 2
         AddStreams_Batch_2:
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           PE: 2
         AddStreams_Batch_3:
           inFIFODepths:
-          - 256
-          - 256
+          - 1024
+          - 1024
           PE: 2
         Defaults:
           inFIFODepths:
@@ -377,114 +377,146 @@ stages:
             - MatrixVectorActivation
         ScaledDotProductAttention_0:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_1:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_10:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_11:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_12:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_13:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_14:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_15:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_2:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_3:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_4:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_5:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_6:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_7:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_8:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         ScaledDotProductAttention_9:
           inFIFODepths:
-          - 256
-          - 256
-          - 256
+          - 32
+          - 32
+          - 32
+          outFIFODepths:
+          - 32
           SeqFold: 32
           EmbFold: 1
         Thresholding_Batch_0:
@@ -508,10 +540,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 66b93e4eba19a9b23311bd982546a4a2.dir
-      size: 2385394426
-      nfiles: 11371
+      md5: ce0715a66b68411c3465b3ec14cc80bd.dir
+      size: 2347140682
+      nfiles: 12011
     - path: resources.yaml
       hash: md5
-      md5: 609232ae3576f31079fd597747d17993
-      size: 78
+      md5: b8ec41037b9c3873df69449d0170de53
+      size: 77

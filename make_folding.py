@@ -107,7 +107,7 @@ def make_folding(
             # dot-product attention and one skipping the MLP block.
             f"AddStreams_Batch_{i}": {
                 # Adding two buffered branches at the input
-                "inFIFODepths": 2 * [fifo_depths],
+                "inFIFODepths": 2 * [seq_len ** 2],
                 # Output buffers can have default sizes
                 # ...
                 # Parallelize along the output dimension to achieve the T^2
@@ -136,9 +136,9 @@ def make_folding(
             f"ScaledDotProductAttention_{i}": {
                 # Three buffered input streams to each attention head:
                 #   queries, keys and values
-                "inFIFODepths": 3 * [fifo_depths],
-                # Output buffers can have default sizes
-                # ...
+                "inFIFODepths": 3 * [seq_len],
+                # A single buffered output from the attention head
+                "outFIFODepths": [seq_len],
                 # No parallelization along the sequence axis,
                 #   i.e., process seq_len groups of input in sequence
                 "SeqFold": seq_len,
