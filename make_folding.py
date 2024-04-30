@@ -79,9 +79,6 @@ def make_folding(
     simd, pe = factorize_mvau_folding_product(
         emb_dim, mlp_dim, seq_len, num_classes
     )
-    # All operators which really need FIFO buffers are determined by the
-    # attention heads, which require buffering of the whole sequence per head.
-    fifo_depths = round(seq_len * emb_dim / num_heads)
     # Start filling the folding configuration with defaults applied to all
     # operators
     folding = {  # noqa: Shadows outer scope
@@ -95,50 +92,64 @@ def make_folding(
             "outFIFODepths": [max_inputs_outputs_per_op * [2], "all"],
             # Set the parallelism of all MVAUs to meet the T^2 cycles per sample
             # target as computed above.
-            "SIMD": [simd, ["MatrixVectorActivation"]],
-            "PE": [pe, ["MatrixVectorActivation"]],
-            # Implement memory for FIFO buffers and MVAU weights in BRAM
-            "ram_style": ["block", ["StreamingFIFO", "MatrixVectorActivation"]]
+            "SIMD": [simd, ["MVAU_hls", "MVAU_rtl"]],
+            "PE": [pe, ["MVAU_hls", "MVAU_rtl"]],
+            # Let the tools automatically decide how to implement memory for
+            # FIFO buffers and MVAU weights
+            "ram_style": ["auto", [
+                "StreamingFIFO_hls", "StreamingFIFO_rtl", "MVAU_hls", "MVAU_rtl"
+            ]]
         },
         # Residual branches need buffering before merging them again to avoid
         # deadlock.
         **{
             # There are two residual branches per layer: One skipping the scaled
-            # dot-product attention and one skipping the MLP block.
-            f"AddStreams_Batch_{i}": {
-                # Adding two buffered branches at the input
-                "inFIFODepths": 2 * [seq_len ** 2],
+            # dot-product attention and one skipping the MLP block. There is
+            # also one positional encoding at the input.
+            f"ElementwiseAdd_hls_{i}": {
+                # Adding two buffered branches at the input, need to buffer the
+                # number of cycles of the main branch, i.e., T^2
+                # Adding the positional encoding needs to be parallelized but
+                # does not require extra buffering (default to depth 2 FIFOs).
+                "inFIFODepths": 2 * [seq_len ** 2 if i != 0 else 2],
                 # Output buffers can have default sizes
                 # ...
                 # Parallelize along the output dimension to achieve the T^2
                 # cycles per sample target
-                "PE": emb_dim // seq_len
-            } for i in range(2 * num_layers)
+                #   Note: Cannot process less than 1 element
+                "PE": max(emb_dim // seq_len, 1)
+            } for i in range(2 * num_layers + 1)
         },
-        # Residual branches contain standalone mult-thresholds which need to
-        # operate in parallel
+        # Thresholding layer might need to operate in parallel to achieve the
+        # target of T^2 cycles per sample
         **{
-            # There are two residual branches per layer: One skipping the scaled
-            # dot-product attention and one skipping the MLP block. Each has 2
-            # standalone thresholds in front of the AddStreams_Batch. There is
-            # another, final, standalone thresholds at the end of the model,
-            # preceding the classification head.
-            f"Thresholding_Batch_{i}": {
+            # Each "layer" of the transformer contains 10 standalone
+            # thresholding layers. There is also another, final standalone
+            # threshold at the end of the model, preceding the classification
+            # head. The linear layer of the classification head is followed by
+            # standalone thresholds as well.
+            # In total, these are num_layers * 10 + 2 standalone thresholding
+            # layers, which are all, according to the preferred_impl_style,
+            # implemented as RTL backend components.
+            # TODO: Currently does not really work to use the standalone RLT
+            #  thresholding layer for the MVAUs
+            f"Thresholding_rtl_{i}": {
                 # Parallelize along the output dimension to achieve the T^2
                 # cycles per sample target
-                "PE": emb_dim // seq_len
-            } for i in range(2 * 2 * num_layers + 1)
+                #   Note: Cannot process less than 1 element
+                "PE": max(emb_dim // seq_len, 1)
+            } for i in range(num_layers * 10 + 2)
         },
         # Generate a FIFO buffer and parallelization configuration for attention
         # heads
         **{
             # There are num_heads attention heads per layer of the transformer
-            f"ScaledDotProductAttention_{i}": {
+            f"ScaledDotProductAttention_hls_{i}": {
                 # Three buffered input streams to each attention head:
                 #   queries, keys and values
                 "inFIFODepths": 3 * [seq_len],
-                # A single buffered output from the attention head
-                "outFIFODepths": [seq_len],
+                # Output buffers can have default sizes
+                # ...
                 # No parallelization along the sequence axis,
                 #   i.e., process seq_len groups of input in sequence
                 "SeqFold": seq_len,

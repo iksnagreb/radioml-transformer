@@ -136,8 +136,6 @@ stages:
       - build.py
       # The custom build steps implemented in this package
       - build_steps.py
-      # Custom graph transformations implemented in this package
-      - transformation/
       # The model export produced by the export stage: This triggers rerunning
       # this stage when the model configuration changes
       - outputs/model.onnx
@@ -153,6 +151,9 @@ stages:
       # Folding configurations specifying parallelization and FIFO sizes for the
       # layers/operators
       - ${build.finn.folding_config_file}:
+      # Configuration file specifying the preferred implementation style of
+      # custom operators
+      - ${build.finn.specialize_layers_config_file}:
     # Outputs produced by this stage which should be tracked and passed on to
     # the next stage
     outs:

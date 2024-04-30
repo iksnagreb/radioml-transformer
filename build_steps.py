@@ -23,40 +23,43 @@ from finn.transformation.streamline.absorb import AbsorbAddIntoMultiThreshold
 from finn.transformation.streamline.reorder import (
     MoveMulPastFork,
     MoveLinearPastFork,
+    MoveTransposePastFork,
     MoveLinearPastEltwiseAdd,
-    MoveScalarLinearPastInvariants
+    MoveScalarLinearPastInvariants,
+    MoveTransposePastEltwise,
 )
 # Collapse consecutive operations of the same type
 from finn.transformation.streamline.collapse_repeated import (
-    CollapseRepeatedMul
-)
-# FINN transformation converting ONNX nodes to HLS custom operators
-from finn.transformation.fpgadataflow.convert_to_hls_layers import (
-    InferAddStreamsLayer
-)
-# Remove some operations without real effect
-from transformation.remove import RemoveIdentityTranspose, RemoveIdentityReshape
-# Cleanup transformations
-from transformation.squeeze import Squeeze
-# Transformations involving Transpose operators
-from transformation.transpose import (
-    MoveTransposePastEltwise,
+    CollapseRepeatedMul,
     CollapseRepeatedTranspose
 )
-# Detects the attention pattern and converts to HLS custom op
-from transformation.attention import (
+# FINN transformation converting ONNX nodes to hardware custom operators
+from finn.transformation.fpgadataflow.convert_to_hw_layers import (
+    InferElementwiseBinaryOperation
+)
+# Remove some operations without real effect
+from finn.transformation.streamline.remove import (
+    RemoveIdentityTranspose,
+    RemoveIdentityReshape
+)
+# Cleanup transformation getting rid of 3d data layout
+from finn.transformation.squeeze import Squeeze
+# Detects the attention pattern and converts to hardware custom op
+from finn.transformation.fpgadataflow.attention import (
     InferScaledDotProductAttention,
     AbsorbMultiThresholdIntoScaledDotProductAttention
 )
 # Mult-Head Attention support
-from transformation.attention_heads import (
+from finn.transformation.fpgadataflow.attention_heads import (
     InferMultiHeads,
     MoveSplitMultiHeadsPastMultiThreshold,
     UnrollMultiHeadAttention,
     MoveMergeMultiHeadsPastMultiThreshold
 )
 # Stream replication for outputs with multiple consumers
-from transformation.replicate_stream import InferReplicateStream
+from finn.transformation.fpgadataflow.replicate_stream import (
+    InferReplicateStream
+)
 # FINN dataflow builder configuration
 from finn.builder.build_dataflow_config import (
     VerificationStepType, DataflowBuildConfig
@@ -163,6 +166,22 @@ def step_streamline_norms(model: ModelWrapper, cfg: DataflowBuildConfig):
     # The transposes around the batch normalization should be collapsed by now
     # and cancel each other out
     model = model.transform(RemoveIdentityTranspose())
+    # We now might have transpose operations accumulating in front of fork nodes
+    model = model.transform(MoveTransposePastFork())
+    model = model.transform(MoveTransposePastEltwise())
+    model = model.transform(CollapseRepeatedTranspose())
+    model = model.transform(RemoveIdentityTranspose())
+    # This needs to be done twice, as per block there is one fork to the
+    # residual branch and one fork into the queries, keys and values input.
+    model = model.transform(MoveTransposePastFork())
+    model = model.transform(MoveTransposePastEltwise())
+    model = model.transform(CollapseRepeatedTranspose())
+    model = model.transform(RemoveIdentityTranspose())
+    # This might have caused the normalization scale and bias to accumulate in
+    # front of transpose or fork node
+    model = model.transform(MoveLinearPastEltwiseAdd())  # noqa: Duplicate
+    model = model.transform(MoveLinearPastFork())
+    model = model.transform(MoveScalarLinearPastInvariants())
     # This might have enabled more streamlining transformations
     model = model.transform(Streamline())
     # We need a custom streamlining step to enable streamlining through certain
@@ -209,7 +228,7 @@ def step_streamline_positional(model: ModelWrapper, cfg: DataflowBuildConfig):
 
 
 # Function running the InferScaledDotProductAttention transformation
-def step_convert_attention_to_hls(model: ModelWrapper, _):
+def step_convert_attention_to_hw(model: ModelWrapper, _):
     # Try to infer reshaping of attention heads
     model = model.transform(InferMultiHeads())  # noqa: Duplicate
     # Try to mode the mult-head splitting past the multi thresholds
@@ -225,15 +244,19 @@ def step_convert_attention_to_hls(model: ModelWrapper, _):
     model = model.transform(MoveMergeMultiHeadsPastMultiThreshold())
     # If applicable, absorb the final thresholds into the attention operator
     model = model.transform(AbsorbMultiThresholdIntoScaledDotProductAttention())
-    # Return the model with attention and multi-heads mapped to hls operators
+    # Return the model with attention and multi-heads mapped to hardware
+    # operators
     return model
 
 
-# Function running the transformations to convert residual branches to HLS
-# layers, in particular     model = model.transform(InferAddStreamsLayer())
-def step_convert_residual_to_hls(model: ModelWrapper, _):
-    # Convert elementwise add operations to streamed adding
-    return model.transform(InferAddStreamsLayer())
+# Function running the transformations to convert elementwise binary operations
+# to their hardware implementations
+def step_convert_elementwise_binary_to_hw(model: ModelWrapper, _):
+    # Convert elementwise operations to hardware operators
+    #   Note: Do not convert the final Mul operator at the output
+    return model.transform(InferElementwiseBinaryOperation(
+        InferElementwiseBinaryOperation.reject_output_dequant
+    ))
 
 
 # Function running the InferReplicateStream transformation
@@ -248,8 +271,12 @@ def step_tidy_up_post_attention(model: ModelWrapper, _):
     # Remove dimensions of size 1 (single batch tensors)
     model = model.transform(Squeeze())
     model = model.transform(RemoveIdentityTranspose())
+
     # Squeezing might enable absorbing adds into thresholds once again
     model = model.transform(AbsorbAddIntoMultiThreshold())
+    # If applicable, absorb the final thresholds into the attention operator
+    #   Note: Might be applicable again after squeezing a transpose away
+    model = model.transform(AbsorbMultiThresholdIntoScaledDotProductAttention())
 
     # Squeezing might enable some more streamlining transformations once again
     model = model.transform(MoveLinearPastEltwiseAdd())  # noqa: Duplicate
