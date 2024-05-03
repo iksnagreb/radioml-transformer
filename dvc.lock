@@ -279,12 +279,12 @@ stages:
     deps:
     - path: build.py
       hash: md5
-      md5: b0d04f76d96e520fd0e4732f094cc35e
-      size: 6852
+      md5: 9df193362f35407d754fe616c09e7d07
+      size: 7283
     - path: build_steps.py
       hash: md5
-      md5: 0a4803d6f41d0c1c336e6e7f63cdda0e
-      size: 13263
+      md5: 303b3feea23dcc257a008aa819265158
+      size: 15206
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -310,12 +310,13 @@ stages:
         build:
           finn:
             output_dir: outputs/build
+            stitched_ip_gen_dcp: false
             synth_clk_period_ns: 10.0
             board: RFSoC2x2
+            shell_flow_type: vivado_zynq
             folding_config_file: folding.json
-            stitched_ip_gen_dcp: true
             specialize_layers_config_file: specialize_layers.json
-            standalone_thresholds: false
+            standalone_thresholds: true
           metrics:
             report: outputs/build/report/post_synth_resources.json
             filter: (top)
@@ -342,14 +343,6 @@ stages:
             - 2
             - 2
           - all
-          SIMD:
-          - 64
-          - - MVAU_hls
-            - MVAU_rtl
-          PE:
-          - 8
-          - - MVAU_hls
-            - MVAU_rtl
           ram_style:
           - auto
           - - StreamingFIFO_hls
@@ -360,183 +353,102 @@ stages:
           inFIFODepths:
           - 2
           - 2
-          PE: 2
         ElementwiseAdd_hls_1:
           inFIFODepths:
           - 1024
           - 1024
-          PE: 2
         ElementwiseAdd_hls_2:
           inFIFODepths:
           - 1024
           - 1024
-          PE: 2
         ElementwiseAdd_hls_3:
           inFIFODepths:
           - 1024
           - 1024
-          PE: 2
         ElementwiseAdd_hls_4:
           inFIFODepths:
           - 1024
           - 1024
-          PE: 2
         ScaledDotProductAttention_hls_0:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_1:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_10:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_11:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_12:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_13:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_14:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_15:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_2:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_3:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_4:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_5:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_6:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_7:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_8:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
         ScaledDotProductAttention_hls_9:
           inFIFODepths:
           - 32
           - 32
           - 32
-          SeqFold: 32
-          EmbFold: 1
-        Thresholding_rtl_0:
-          PE: 2
-        Thresholding_rtl_1:
-          PE: 2
-        Thresholding_rtl_10:
-          PE: 2
-        Thresholding_rtl_11:
-          PE: 2
-        Thresholding_rtl_12:
-          PE: 2
-        Thresholding_rtl_13:
-          PE: 2
-        Thresholding_rtl_14:
-          PE: 2
-        Thresholding_rtl_15:
-          PE: 2
-        Thresholding_rtl_16:
-          PE: 2
-        Thresholding_rtl_17:
-          PE: 2
-        Thresholding_rtl_18:
-          PE: 2
-        Thresholding_rtl_19:
-          PE: 2
-        Thresholding_rtl_2:
-          PE: 2
-        Thresholding_rtl_20:
-          PE: 2
-        Thresholding_rtl_21:
-          PE: 2
-        Thresholding_rtl_3:
-          PE: 2
-        Thresholding_rtl_4:
-          PE: 2
-        Thresholding_rtl_5:
-          PE: 2
-        Thresholding_rtl_6:
-          PE: 2
-        Thresholding_rtl_7:
-          PE: 2
-        Thresholding_rtl_8:
-          PE: 2
-        Thresholding_rtl_9:
-          PE: 2
       specialize_layers.json:
         '':
           preferred_impl_style: ''
@@ -548,10 +460,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 8e4a36516a0880d506e4ade29c690ae7.dir
-      size: 2399240079
-      nfiles: 14052
+      md5: d5a00671f944f9061abe1d89e7db56b3.dir
+      size: 153190784
+      nfiles: 4415
     - path: resources.yaml
       hash: md5
-      md5: 60af8911d6cbb0491cc662796582ec88
+      md5: 99d47f487a909c845a8a47d992785463
       size: 78

@@ -8,6 +8,8 @@ import finn.builder.build_dataflow as build
 # FINN dataflow builder configuration
 import finn.builder.build_dataflow_config as build_cfg
 
+# The RadioML modulation classification dataset
+from dataset import get_datasets
 # Seeding RNGs for reproducibility
 from utils import seed
 
@@ -21,7 +23,8 @@ from build_steps import (
     step_streamline_positional,
     step_convert_attention_to_hw,
     step_convert_elementwise_binary_to_hw,
-    step_replicate_streams
+    step_replicate_streams,
+    step_set_target_parallelization
 )
 
 # Script entrypoint
@@ -32,13 +35,16 @@ if __name__ == "__main__":
         params = yaml.safe_load(file)
     # Seed all RNGs
     seed(params["seed"])
+    # Load the RadioML dataset splits as configured to get the input dimensions
+    # to set the folding configuration
+    _, _, eval_data = get_datasets(**params["dataset"])
+    # Extract sequence length and embedding dimension from the dateset
+    seq_len, emb_dim = eval_data[0][0].shape
     # Create a configuration for building the scaled dot-product attention
     # operator to a hardware accelerator
     cfg = build_cfg.DataflowBuildConfig(
         # Unpack the build configuration parameters
         **params["build"]["finn"],
-        # This is a Zynq flow
-        shell_flow_type=build_cfg.ShellFlowType.VIVADO_ZYNQ,
         # Generate and keep the intermediate outputs including reports
         generate_outputs=[
             build_cfg.DataflowOutputType.ESTIMATE_REPORTS,
@@ -113,7 +119,9 @@ if __name__ == "__main__":
             "step_specialize_layers",
             # From here on it is basically the default flow...
             "step_create_dataflow_partition",
-            "step_target_fps_parallelization",
+            # Set the folding configuration to meet the cycles per sequence
+            # target
+            step_set_target_parallelization(seq_len, emb_dim),
             # Note: This triggers a verification step
             "step_apply_folding_config",
             "step_minimize_bit_width",
