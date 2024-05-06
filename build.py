@@ -2,6 +2,8 @@
 import yaml
 # Pandas to handle the reports as table, i.e., DataFrame
 import pandas as pd
+# For loading the sample input to query the input dimensions
+import numpy as np
 
 # FINN dataflow builder
 import finn.builder.build_dataflow as build
@@ -35,11 +37,9 @@ if __name__ == "__main__":
         params = yaml.safe_load(file)
     # Seed all RNGs
     seed(params["seed"])
-    # Load the RadioML dataset splits as configured to get the input dimensions
-    # to set the folding configuration
-    _, _, eval_data = get_datasets(**params["dataset"])
-    # Extract sequence length and embedding dimension from the dateset
-    seq_len, emb_dim = eval_data[0][0].shape
+    # Extract sequence length and embedding dimension from the verification
+    # sample inputs
+    _, seq_len, emb_dim = np.load("outputs/inp.npy").shape
     # Create a configuration for building the scaled dot-product attention
     # operator to a hardware accelerator
     cfg = build_cfg.DataflowBuildConfig(

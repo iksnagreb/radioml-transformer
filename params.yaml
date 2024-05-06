@@ -16,6 +16,9 @@ model:
   # Type of normalization layer to use in the transformer blocks
   #   Options are: layer-norm, batch-norm and none
   norm: batch-norm
+  # Type of positional encoding to use at the input
+  #   Options are: none, sinusoidal, binary, learned
+  positional_encoding: binary
   # Dropout: probability of an element to be zeroed during training
   dropout: 0.0
   # Number of bits to use for quantized representation in "almost all layers"

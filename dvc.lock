@@ -13,8 +13,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: 780e43d0c1993b3fa302260166784d35
-      size: 20925
+      md5: 95188b74601df35424d41b1bbc70a31b
+      size: 27767
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -66,6 +66,7 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
+          positional_encoding: binary
           dropout: 0.0
           bits: 4
           input_bits: 8
@@ -93,15 +94,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 98d4a3f3d17bd1cd200ceb315b96cadf
-      size: 5483
+      md5: 24d2892733838878f82ae04c324fabf7
+      size: 5480
     - path: outputs/model.pt
       hash: md5
-      md5: b6f540db088e8eb12ae8adc2baab703a
+      md5: 13f75a71333939fc70022b052d15da6d
       size: 552806
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e57b0ae3d230e97d4d3667567946078
+      md5: d854810b6e3214a925cd62918837be46
       size: 849413
   eval:
     cmd: python -m eval
@@ -120,11 +121,11 @@ stages:
       size: 4720
     - path: model.py
       hash: md5
-      md5: 780e43d0c1993b3fa302260166784d35
-      size: 20925
+      md5: 95188b74601df35424d41b1bbc70a31b
+      size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: b6f540db088e8eb12ae8adc2baab703a
+      md5: 13f75a71333939fc70022b052d15da6d
       size: 552806
     params:
       params.yaml:
@@ -171,6 +172,7 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
+          positional_encoding: binary
           dropout: 0.0
           bits: 4
           input_bits: 8
@@ -180,16 +182,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 205eb1ec1c0e60655fd9fea4dbf81281
-      size: 699
+      md5: 7fe148e15dccf4b7ab581a5c37368bc9
+      size: 697
     - path: accuracy.yaml
       hash: md5
-      md5: 40ff349dc4cc46df097971a44f4befd1
+      md5: 30822080b4f9c20b8bfd3e81370aa20a
       size: 29
     - path: classes.csv
       hash: md5
-      md5: e2c29aefad90c5d0d9943c8f92be311c
-      size: 961153
+      md5: 87c916c72750ce27b4abc9ad6f86b764
+      size: 962350
   export:
     cmd: python -m export
     deps:
@@ -207,11 +209,11 @@ stages:
       size: 4507
     - path: model.py
       hash: md5
-      md5: 780e43d0c1993b3fa302260166784d35
-      size: 20925
+      md5: 95188b74601df35424d41b1bbc70a31b
+      size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: b6f540db088e8eb12ae8adc2baab703a
+      md5: 13f75a71333939fc70022b052d15da6d
       size: 552806
     params:
       params.yaml:
@@ -255,6 +257,7 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
+          positional_encoding: binary
           dropout: 0.0
           bits: 4
           input_bits: 8
@@ -268,19 +271,19 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: fffe369cccd945ace529f92ab01297dc
+      md5: 78ee4fcfe5804196b71795a33f3e003e
       size: 494647
     - path: outputs/out.npy
       hash: md5
-      md5: e42d23b0ce2e4b8d16263ff72532bc5d
+      md5: a108f92ae98138dae52d7bd5fa998cce
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
     deps:
     - path: build.py
       hash: md5
-      md5: 9df193362f35407d754fe616c09e7d07
-      size: 7283
+      md5: 6be4e43d8e185582624442deb1ade4f0
+      size: 7227
     - path: build_steps.py
       hash: md5
       md5: 303b3feea23dcc257a008aa819265158
@@ -295,11 +298,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: fffe369cccd945ace529f92ab01297dc
+      md5: 78ee4fcfe5804196b71795a33f3e003e
       size: 494647
     - path: outputs/out.npy
       hash: md5
-      md5: e42d23b0ce2e4b8d16263ff72532bc5d
+      md5: a108f92ae98138dae52d7bd5fa998cce
       size: 3200
     - path: run.sh
       hash: md5
@@ -460,10 +463,10 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: d5a00671f944f9061abe1d89e7db56b3.dir
-      size: 153190784
-      nfiles: 4415
+      md5: 38e0fbc304ae94e664cb38462101c0bd.dir
+      size: 153097272
+      nfiles: 4367
     - path: resources.yaml
       hash: md5
-      md5: 99d47f487a909c845a8a47d992785463
+      md5: 79de74de3dcde9eff77b78ee655d3d3b
       size: 78
