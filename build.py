@@ -10,8 +10,6 @@ import finn.builder.build_dataflow as build
 # FINN dataflow builder configuration
 import finn.builder.build_dataflow_config as build_cfg
 
-# The RadioML modulation classification dataset
-from dataset import get_datasets
 # Seeding RNGs for reproducibility
 from utils import seed
 
