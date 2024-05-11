@@ -282,12 +282,12 @@ stages:
     deps:
     - path: build.py
       hash: md5
-      md5: 05490ed96d46947f7d0094fa02a75713
-      size: 7146
+      md5: 1cea16d0752ec48510580eaba114f79f
+      size: 7451
     - path: build_steps.py
       hash: md5
-      md5: 303b3feea23dcc257a008aa819265158
-      size: 15206
+      md5: aab02d9372cd37fc43dd88aa8dde9cde
+      size: 27450
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -317,141 +317,33 @@ stages:
             synth_clk_period_ns: 10.0
             board: RFSoC2x2
             shell_flow_type: vivado_zynq
-            folding_config_file: folding.json
+            folding_config_file: folding.yaml
             specialize_layers_config_file: specialize_layers.json
             standalone_thresholds: true
+            max_multithreshold_bit_width: 8
+            mvau_wwidth_max: 36
           metrics:
             report: outputs/build/report/post_synth_resources.json
             filter: (top)
         seed: 12
-      folding.json:
-        Defaults:
-          inFIFODepths:
-          - - 2
-            - 2
-            - 2
-            - 2
-            - 2
-            - 2
-            - 2
-            - 2
-          - all
-          outFIFODepths:
-          - - 2
-            - 2
-            - 2
-            - 2
-            - 2
-            - 2
-            - 2
-            - 2
-          - all
-          ram_style:
-          - auto
-          - - StreamingFIFO_hls
-            - StreamingFIFO_rtl
-            - MVAU_hls
-            - MVAU_rtl
-        ElementwiseAdd_hls_0:
-          inFIFODepths:
-          - 2
-          - 2
-        ElementwiseAdd_hls_1:
-          inFIFODepths:
-          - 1024
-          - 1024
-        ElementwiseAdd_hls_2:
-          inFIFODepths:
-          - 1024
-          - 1024
-        ElementwiseAdd_hls_3:
-          inFIFODepths:
-          - 1024
-          - 1024
-        ElementwiseAdd_hls_4:
-          inFIFODepths:
-          - 1024
-          - 1024
-        ScaledDotProductAttention_hls_0:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_1:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_10:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_11:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_12:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_13:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_14:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_15:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_2:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_3:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_4:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_5:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_6:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_7:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_8:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
-        ScaledDotProductAttention_hls_9:
-          inFIFODepths:
-          - 32
-          - 32
-          - 32
+      folding.yaml:
+        defaults:
+          MVAU_hls:
+            resType: auto
+            mem_mode: internal_decoupled
+            ram_style: auto
+            ram_style_thresholds: auto
+          MVAU_rtl:
+            resType: dsp
+            mem_mode: internal_decoupled
+            ram_style: auto
+          Thresholding_hls:
+            mem_mode: internal_decoupled
+            ram_style: distributed
+          Thresholding_rtl: {}
+          StreamingFIFO_rtl:
+            impl_style: rtl
+            ram_style: auto
       specialize_layers.json:
         '':
           preferred_impl_style: ''
@@ -463,8 +355,8 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 407a3209776e49ff604bad67a4f9e629.dir
-      size: 153344141
+      md5: 16948aba3e17d171222380e8d284c090.dir
+      size: 153258691
       nfiles: 4431
     - path: resources.yaml
       hash: md5
