@@ -282,12 +282,12 @@ stages:
     deps:
     - path: build.py
       hash: md5
-      md5: 1cea16d0752ec48510580eaba114f79f
-      size: 7451
+      md5: f4a05fb91c76616e65c71ea862ac7abf
+      size: 7841
     - path: build_steps.py
       hash: md5
-      md5: 48cbf47223b72c5ebcc0f2960aab9582
-      size: 30846
+      md5: 8c24d8ff9199d6c08c9893298df36fee
+      size: 35545
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -328,22 +328,34 @@ stages:
         seed: 12
       folding.yaml:
         defaults:
+          ScaledDotProductAttention_hls:
+            ram_style: distributed
+            ram_style_thresholds: distributed
+            mac_resource: dsp
+          ElementwiseAdd_hls:
+            ram_style: distributed
           MVAU_hls:
-            resType: auto
+            resType: dsp
             mem_mode: internal_decoupled
-            ram_style: auto
-            ram_style_thresholds: auto
+            ram_style: distributed
+            ram_style_thresholds: distributed
+            runtime_writeable_weights: 0
           MVAU_rtl:
             resType: dsp
             mem_mode: internal_decoupled
-            ram_style: auto
+            ram_style: distributed
+            runtime_writeable_weights: 0
           Thresholding_hls:
             mem_mode: internal_decoupled
             ram_style: distributed
-          Thresholding_rtl: {}
+            runtime_writeable_weights: 0
+          Thresholding_rtl:
+            depth_trigger_uram: 2147483647
+            depth_trigger_bram: 2147483647
+            runtime_writeable_weights: 0
           StreamingFIFO_rtl:
             impl_style: rtl
-            ram_style: auto
+            ram_style: distributed
       specialize_layers.json:
         '':
           preferred_impl_style: ''
@@ -355,21 +367,21 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: fd16355c03c9d1f8c263e997b5ebb9c9.dir
-      size: 153262005
-      nfiles: 4431
+      md5: 012e5589b45da506cc230145a9841457.dir
+      size: 170038207
+      nfiles: 4885
     - path: resources.yaml
       hash: md5
-      md5: b139ef996e60caf5099b70597a725d4f
-      size: 78
+      md5: ce361c878655eb196ce3495432c48364
+      size: 75
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: a8eff5bae6b992f6e2b5d6c6ba2fcae1.dir
-      size: 25600
-      nfiles: 8
+      md5: 411092bf965d37511fe88dee125db9ea.dir
+      size: 5300008
+      nfiles: 10
     - path: verify.py
       hash: md5
       md5: 69ba4a5769ec79d36a6d274fcfa77c6e

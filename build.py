@@ -26,7 +26,9 @@ from build_steps import (
     step_replicate_streams,
     set_target_parallelization,
     set_fifo_depths,
-    step_apply_folding_config
+    step_apply_folding_config,
+    node_by_node_cppsim,
+    node_by_node_rtlsim
 )
 
 # Script entrypoint
@@ -136,6 +138,12 @@ if __name__ == "__main__":
             # Set the attention- and residual-related FIFO depths insert FIFOs
             # and apply folding configuration once again
             set_fifo_depths(seq_len, emb_dim),
+            # Run additional node-by-node verification in RTL simulation of the
+            # model before creating the stitched IP
+            # Note: end-to-end verification of the stitched IP in RTL simulation
+            # is still not possible due to missing float IPs
+            node_by_node_cppsim,
+            node_by_node_rtlsim,
             "step_create_stitched_ip",
             # Attention does currently not support RTL simulation due to missing
             # float IPs.
