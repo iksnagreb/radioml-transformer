@@ -141,3 +141,17 @@ build:
     report: outputs/build/report/post_synth_resources.json
     # Filter the report rows
     filter: (top)
+# Accelerator deployment parameters
+eval-on-device:
+  # Accelerator batch size - should not influence the accuracy result, just
+  # sends more evaluation data at once into the accelerator and thus might
+  # influence the measured throughput
+  batch_size: 4096
+  # DataLoader keyword arguments
+  loader:
+    # Number of workers to use for loading the data in parallel
+    num_workers: 4
+    # Number of batches loaded in advance by each worker
+    prefetch_factor: 4
+    # Do not drop the last batch if it is incomplete
+    drop_last: false
