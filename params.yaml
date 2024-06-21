@@ -1,3 +1,6 @@
+# Tagging of metrics and verification aggregation to assist filtering experiment
+# sweeps
+tag: ""
 # Global seed to make training and evaluation reproducible
 # Note: Dataset splitting has its own seed
 seed: 12
