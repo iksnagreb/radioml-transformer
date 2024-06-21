@@ -68,7 +68,7 @@ stages:
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
-          bits: 4
+          bits: 6
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -94,15 +94,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: af9ded261030080ce472b7e49b39c700
-      size: 5492
+      md5: 6fe5144a5e25fcc997dcd7c45d9963ff
+      size: 5504
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: 4357a112036a25801c38aa7887a69eea
       size: 552806
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e7ed2b494f750b933e303f61ed2e672
+      md5: 9a3de08ed59c12c194ff0fa3a6319b37
       size: 849413
   eval:
     cmd: python -m eval
@@ -125,7 +125,7 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: 4357a112036a25801c38aa7887a69eea
       size: 552806
     params:
       params.yaml:
@@ -174,7 +174,7 @@ stages:
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
-          bits: 4
+          bits: 6
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -182,16 +182,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 5261ac0b6c146ee9c5bd3415fea3e857
-      size: 699
+      md5: 82efc8c6d55d2a9bf875ad71a8c6c063
+      size: 697
     - path: accuracy.yaml
       hash: md5
-      md5: 1c9ad4e4d17fbc6d0ac37862d7381a89
-      size: 29
+      md5: d162a6032b328643d597c36d1303c242
+      size: 28
     - path: classes.csv
       hash: md5
-      md5: f626b4cfd7b801f07b0dbf69c992ad68
-      size: 962180
+      md5: ee2af7e300175b5f94488ffcd2741e9d
+      size: 959757
   export:
     cmd: python -m export
     deps:
@@ -213,7 +213,7 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: 4357a112036a25801c38aa7887a69eea
       size: 552806
     params:
       params.yaml:
@@ -259,7 +259,7 @@ stages:
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
-          bits: 4
+          bits: 6
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -271,11 +271,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: faf6c78691efa02f266e8084305577a4
+      md5: f34a7ac2d1c142434d1e61183f469067
       size: 494526
     - path: outputs/out.npy
       hash: md5
-      md5: f9400b39bc59630163dc91ec30707614
+      md5: baeb78b5dddee8a2af6f40626ac12358
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
@@ -298,11 +298,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: faf6c78691efa02f266e8084305577a4
+      md5: f34a7ac2d1c142434d1e61183f469067
       size: 494526
     - path: outputs/out.npy
       hash: md5
-      md5: f9400b39bc59630163dc91ec30707614
+      md5: baeb78b5dddee8a2af6f40626ac12358
       size: 3200
     - path: run.sh
       hash: md5
@@ -369,20 +369,20 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: e6704c839364624ed523f464b99862d1.dir
-      size: 165298340
-      nfiles: 4404
+      md5: b0642d56dda31925b4a9078385ecb916.dir
+      size: 219376202
+      nfiles: 9044
     - path: resources.yaml
       hash: md5
-      md5: 864c927ddfda848f36c0c3d31775580a
-      size: 80
+      md5: 0602fc520d176c1c3a71dc612889e290
+      size: 79
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: ffe9e633724e6fe2a42072145d588770.dir
-      size: 2451342
+      md5: 0b94f3755c1618f2e8ac5b7eeaecd382.dir
+      size: 3004302
       nfiles: 9
     - path: verify.py
       hash: md5
@@ -394,5 +394,5 @@ stages:
     outs:
     - path: verification.yaml
       hash: md5
-      md5: 5224a3f087dfdd2bec5b236e4205ac3c
-      size: 22
+      md5: 8228a4d2ccfbff3d7a47c4e4d34aaad2
+      size: 19
