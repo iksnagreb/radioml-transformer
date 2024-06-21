@@ -68,7 +68,7 @@ stages:
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
-          bits: 4
+          bits: 5
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -94,15 +94,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: af9ded261030080ce472b7e49b39c700
-      size: 5492
+      md5: 0043ae2a1ecde13d61157523f6e7a60f
+      size: 5523
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: f6a10c1ce20b294d4a2a9217b6f0f30d
       size: 552806
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e7ed2b494f750b933e303f61ed2e672
+      md5: f10a9afd0978b23ec543fb7ef378671a
       size: 849413
   eval:
     cmd: python -m eval
@@ -125,7 +125,7 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: f6a10c1ce20b294d4a2a9217b6f0f30d
       size: 552806
     params:
       params.yaml:
@@ -174,7 +174,7 @@ stages:
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
-          bits: 4
+          bits: 5
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -182,16 +182,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 5261ac0b6c146ee9c5bd3415fea3e857
-      size: 699
+      md5: 05ec18629d8003e3ca69b0fae7f7861e
+      size: 698
     - path: accuracy.yaml
       hash: md5
-      md5: 1c9ad4e4d17fbc6d0ac37862d7381a89
+      md5: 29ada01042b0a018a6f13cde5517d64a
       size: 29
     - path: classes.csv
       hash: md5
-      md5: f626b4cfd7b801f07b0dbf69c992ad68
-      size: 962180
+      md5: 04119b3fbe6403758e23c8a61ffba363
+      size: 964035
   export:
     cmd: python -m export
     deps:
@@ -213,7 +213,7 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: f6a10c1ce20b294d4a2a9217b6f0f30d
       size: 552806
     params:
       params.yaml:
@@ -259,7 +259,7 @@ stages:
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
-          bits: 4
+          bits: 5
           input_bits: 8
           output_bits: 8
           num_classes: 24
@@ -271,11 +271,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: faf6c78691efa02f266e8084305577a4
+      md5: c1142b3a2b160b83b8b0c80125493e57
       size: 494526
     - path: outputs/out.npy
       hash: md5
-      md5: f9400b39bc59630163dc91ec30707614
+      md5: d766de7691d1bd966f87c45409be78d7
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
@@ -298,11 +298,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: faf6c78691efa02f266e8084305577a4
+      md5: c1142b3a2b160b83b8b0c80125493e57
       size: 494526
     - path: outputs/out.npy
       hash: md5
-      md5: f9400b39bc59630163dc91ec30707614
+      md5: d766de7691d1bd966f87c45409be78d7
       size: 3200
     - path: run.sh
       hash: md5
@@ -369,20 +369,20 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: e6704c839364624ed523f464b99862d1.dir
-      size: 165298340
-      nfiles: 4404
+      md5: c706277983188d8cc3818ca04beefaad.dir
+      size: 183472708
+      nfiles: 5988
     - path: resources.yaml
       hash: md5
-      md5: 864c927ddfda848f36c0c3d31775580a
-      size: 80
+      md5: 7534c6dacecc7acbc78b49d1c9cd4545
+      size: 79
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: ffe9e633724e6fe2a42072145d588770.dir
-      size: 2451342
+      md5: c69d13d75848052b9aafe608c2004cdd.dir
+      size: 2635662
       nfiles: 9
     - path: verify.py
       hash: md5
