@@ -6,6 +6,8 @@ import numpy as np
 import yaml
 # QONNX wrapper of ONNX model graphs
 from qonnx.core.modelwrapper import ModelWrapper
+# QONNX quantization data types
+from qonnx.core.datatype import DataType
 # Converts ONNX graph nodes to QONNX custom-ops if possible
 from qonnx.custom_op.registry import getCustomOp
 # QONNX graph transformations for renaming and cleaning up
@@ -65,7 +67,8 @@ from finn.transformation.streamline.collapse_repeated import (
 )
 # FINN transformation converting ONNX nodes to hardware custom operators
 from finn.transformation.fpgadataflow.convert_to_hw_layers import (
-    InferElementwiseBinaryOperation
+    InferElementwiseBinaryOperation,
+    InferLookupLayer
 )
 # Remove some operations without real effect
 from finn.transformation.streamline.remove import (
@@ -384,6 +387,24 @@ def step_convert_elementwise_binary_to_hw(model: ModelWrapper, _):
     ))
 
 
+# Function running the transformations to convert Gather, i.e., index lookup,
+# nodes to their hardware implementations
+def step_convert_lookup_to_hw(model: ModelWrapper, _):
+    # Iterate all nodes in the graph keeping track of the index
+    for index, node in enumerate(model.graph.node):
+        # If this is a Gather node, force the input (index) type annotation
+        if node.op_type == "Gather":
+            # Force to unsigned 64-bit integer for now
+            model.set_tensor_datatype(node.input[1], DataType["UINT64"])
+            # Get the value info for the input tensor to have access to the ONNX
+            # datatype of the tensor
+            value_info = model.get_tensor_valueinfo(node.input[1])
+            # Force the container datatype of the input to be a float
+            value_info.type.tensor_type.elem_type = 1
+    # Convert Gather to Lookup layers
+    return model.transform(InferLookupLayer())
+
+
 # Function running the InferReplicateStream transformation
 def step_replicate_streams(model: ModelWrapper, _):
     # Properly replicate the stream feeding the query, key and value projections
@@ -424,7 +445,7 @@ def step_tidy_up_post_attention(model: ModelWrapper, _):
 # Custom step for setting the parallelism to meet the target of T^2 cycles per
 # sequence
 def set_target_parallelization(seq_len: int,
-                                    emb_dim: int):  # noqa: emb_dim
+                               emb_dim: int):  # noqa: emb_dim
     # The wrapping function is a generator and this is the actual build step
     # function taking the model and build configuration
     def step_set_target_parallelization(
@@ -498,7 +519,9 @@ class ApplyConfig(Transformation):
 
 
 # Custom build step trying to set appropriate FIFO sizes for the transformer
-def set_fifo_depths(seq_len: int, emb_dim: int):  # noqa: emb_dim
+def set_fifo_depths(
+        seq_len: int, emb_dim: int, uram_threshold: int = 32  # noqa: emb_dim
+):
     # The wrapping function is a generator and this is the actual build step
     # function taking the model and build configuration
     def step_set_fifo_depths(model: ModelWrapper, cfg: DataflowBuildConfig):
@@ -568,7 +591,9 @@ def set_fifo_depths(seq_len: int, emb_dim: int):  # noqa: emb_dim
         # no other depth is specified)
         model = model.transform(InsertFIFO(create_shallow_fifos=True))
         # Specialize the implementation variant of the (newly added FIFO) layers
-        model = model.transform(SpecializeLayers())
+        model = model.transform(
+            SpecializeLayers(cfg._resolve_fpga_part())  # noqa: Access _ method
+        )
         model = model.transform(GiveUniqueNodeNames())
         model = model.transform(GiveReadableTensorNames())
 
@@ -584,6 +609,24 @@ def set_fifo_depths(seq_len: int, emb_dim: int):  # noqa: emb_dim
                 # Apply the configuration dictionary to the model graph
                 model = model.transform(ApplyConfig(config))
 
+        # Run over all nodes in the model graph once again to modify the
+        # inserted FIFOs
+        # Note: This overwrites the folding configuration...
+        # TODO: Find a better way to handle this
+        for index, node in enumerate(model.graph.node):
+            # Modify all RTL FIFO operators
+            if node.op_type == "StreamingFIFO_rtl":
+                # Convert this to the custom-op instance for easy access to node
+                # attributes
+                inst = getCustomOp(node)
+                # Check the depth of the FIFO: If this is not a shallow FIFO,
+                # implement this via the vivado strategy in URAM
+                if inst.get_nodeattr("depth") >= uram_threshold:
+                    # Change the implementation style to vivado
+                    inst.set_nodeattr("impl_style", "vivado")
+                    # Set the resource type for the memory to URAM
+                    inst.set_nodeattr("ram_style", "ultra")
+
         # Hardware attributes to be extracted from each node
         hw_attrs = {
             "PE",
@@ -591,9 +634,11 @@ def set_fifo_depths(seq_len: int, emb_dim: int):  # noqa: emb_dim
             "parallel_window",
             "ram_style",
             "ram_style_thresholds",
+            "ram_style_mask",
             "depth",
             "impl_style",
             "resType",
+            "mac_resource",
             "mem_mode",
             "runtime_writeable_weights",
             "inFIFODepths",

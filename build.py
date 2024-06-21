@@ -23,12 +23,13 @@ from build_steps import (
     step_streamline_positional,
     step_convert_attention_to_hw,
     step_convert_elementwise_binary_to_hw,
+    step_convert_lookup_to_hw,
     step_replicate_streams,
     set_target_parallelization,
     set_fifo_depths,
     step_apply_folding_config,
+    node_by_node_rtlsim,  # noqa: Maybe unused, only for debugging
     node_by_node_cppsim,
-    node_by_node_rtlsim
 )
 
 # Script entrypoint
@@ -114,6 +115,9 @@ if __name__ == "__main__":
             # These include for example adding residual branches and positional
             # encoding
             step_convert_elementwise_binary_to_hw,
+            # Convert the Gather layer realizing the input token embedding to
+            # the FINN hardware implementation, i.e., the Lookup layer
+            step_convert_lookup_to_hw,
             # Properly replicate the stream feeding the query, key and value
             # projections
             step_replicate_streams,
@@ -137,13 +141,17 @@ if __name__ == "__main__":
             "step_hw_ipgen",
             # Set the attention- and residual-related FIFO depths insert FIFOs
             # and apply folding configuration once again
-            set_fifo_depths(seq_len, emb_dim),
+            # Note: Implement all FIFOs with a depth at least as deep as the
+            # sequence length in URAM.
+            set_fifo_depths(seq_len, emb_dim, uram_threshold=seq_len),
             # Run additional node-by-node verification in RTL simulation of the
             # model before creating the stitched IP
             # Note: end-to-end verification of the stitched IP in RTL simulation
             # is still not possible due to missing float IPs
             node_by_node_cppsim,
-            node_by_node_rtlsim,
+            # Only for debugging for now, does not work if "vivado" style
+            # StreamingFIFOs are used
+            # node_by_node_rtlsim,
             "step_create_stitched_ip",
             # Attention does currently not support RTL simulation due to missing
             # float IPs.
