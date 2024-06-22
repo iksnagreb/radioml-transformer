@@ -65,7 +65,7 @@ stages:
           bias: true
           emb_dim: 64
           mlp_dim: 256
-          norm: batch-norm
+          norm: layer-norm
           positional_encoding: binary
           dropout: 0.0
           bits: 4
@@ -94,15 +94,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: af9ded261030080ce472b7e49b39c700
-      size: 5492
+      md5: 6855f928f564dd5aaee2f1ceacb45c17
+      size: 5477
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: a9ea326f6f0b761703e7051971e97ece
+      size: 546914
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e7ed2b494f750b933e303f61ed2e672
+      md5: 90f3325b68f16e97cf86425b32c7853e
       size: 849413
   eval:
     cmd: python -m eval
@@ -125,8 +125,8 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: a9ea326f6f0b761703e7051971e97ece
+      size: 546914
     params:
       params.yaml:
         dataset:
@@ -171,7 +171,7 @@ stages:
           bias: true
           emb_dim: 64
           mlp_dim: 256
-          norm: batch-norm
+          norm: layer-norm
           positional_encoding: binary
           dropout: 0.0
           bits: 4
@@ -182,16 +182,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 5261ac0b6c146ee9c5bd3415fea3e857
-      size: 699
+      md5: f41e5753ca6dfdd2eb96c27f494af672
+      size: 692
     - path: accuracy.yaml
       hash: md5
-      md5: 1c9ad4e4d17fbc6d0ac37862d7381a89
+      md5: 988359ed6b6e9c0a62c003a18cb1b547
       size: 29
     - path: classes.csv
       hash: md5
-      md5: f626b4cfd7b801f07b0dbf69c992ad68
-      size: 962180
+      md5: f68e63c0d67674a883c8deac26179be1
+      size: 962490
   export:
     cmd: python -m export
     deps:
