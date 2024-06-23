@@ -1,15 +1,15 @@
 # Tagging of metrics and verification aggregation to assist filtering experiment
 # sweeps
-tag: ""
+tag: layers
 # Global seed to make training and evaluation reproducible
 # Note: Dataset splitting has its own seed
-seed: 12
+seed: 54
 # Model configuration section
 model:
   # Number of attention heads
   num_heads: 8
   # Number of attention block "layers"
-  num_layers: 2
+  num_layers: 3
   # Enables/disables bias on linear layers
   bias: true
   # Size of the input/output embedding dimension
@@ -41,19 +41,39 @@ dataset:
   # Optionally select only a subset of the classes
   #  classes: null
   # Optionally select only a subset of the available noise levels
-  signal_to_noise_ratios: [
-    # Noise levels from -6 dB upwards to 30 dB in steps of 2
-    #   !!python/object/apply:builtins.range [-6, 31, 2]
-    -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
-  ]
+  signal_to_noise_ratios:
+  - -6
+  - -4
+  - -2
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+  - 12
+  - 14
+  - 16
+  - 18
+  - 20
+  - 22
+  - 24
+  - 26
+  - 28
+  - 30
   # Splits the dataset into train/validation/evaluation subsets
-  splits: [ 0.80, 0.10, 0.10 ]  # 80%, 10%, 10% splits
+  splits:                       # 80%, 10%, 10% splits
   # Seed used for reproducible splitting of datasets
+  - 0.80
+  - 0.10
+  - 0.10
   seed: 12
   # Reshape the dataset to fit the expected embedding dimension of the model
   # and to effectively reduce the sequence length
-  reshape: [ -1, 64 ]  # -1 will infer the sequence length
+  reshape:             # -1 will infer the sequence length
 # Training hyperparameters
+  - -1
+  - 64
 train:
   # Batch size for training
   batch_size: 512
@@ -70,7 +90,9 @@ train:
     # Coefficients used for computing running averages of gradient and its
     # square.
     # Note: Set according to Vaswani et al. 2017
-    betas: [ 0.9, 0.98 ]
+    betas:
+    - 0.9
+    - 0.98
     # Term added to the denominator to improve numerical stability
     # Note: Set according to Vaswani et al. 2017
     eps: 1.0e-9
@@ -114,7 +136,7 @@ build:
     # Directory to store the build outputs
     output_dir: outputs/build
     # Run synthesis to generate a .dcp for the stitched-IP output product
-    stitched_ip_gen_dcp: False
+    stitched_ip_gen_dcp: false
     # Target clock period, i.e., inverse of target frequency
     synth_clk_period_ns: 10.0
     # Board to target with the build
@@ -127,7 +149,7 @@ build:
     specialize_layers_config_file: specialize_layers.json
     # Force the implementation of standalone thresholds to be able to use RTL
     # implementation of the MVU
-    standalone_thresholds: True
+    standalone_thresholds: true
     # Maximum bit-width of quantizers converted to multi-thresholds
     max_multithreshold_bit_width: 16
     # Maximum width of MVAU stream per PE
