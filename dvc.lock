@@ -66,13 +66,13 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
-          positional_encoding: binary
+          positional_encoding: none
           dropout: 0.0
           bits: 4
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
         train:
           batch_size: 512
           epochs: 100
@@ -94,15 +94,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: af9ded261030080ce472b7e49b39c700
-      size: 5492
+      md5: 5bcef8e5e8acf5192e1ae8b6b0815d8b
+      size: 5487
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: 1d6d7c1fc08ed99b3cb367f39f0a5279
+      size: 552614
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e7ed2b494f750b933e303f61ed2e672
+      md5: 921ec11e5b9d5bd15710f392450d61f6
       size: 849413
   eval:
     cmd: python -m eval
@@ -125,8 +125,8 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: 1d6d7c1fc08ed99b3cb367f39f0a5279
+      size: 552614
     params:
       params.yaml:
         dataset:
@@ -172,26 +172,26 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
-          positional_encoding: binary
+          positional_encoding: none
           dropout: 0.0
           bits: 4
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 5261ac0b6c146ee9c5bd3415fea3e857
-      size: 699
+      md5: b7077f219a30d2e39118b61409d6adb4
+      size: 696
     - path: accuracy.yaml
       hash: md5
-      md5: 1c9ad4e4d17fbc6d0ac37862d7381a89
+      md5: 6b4b90d3ee313e9525afedb01d72ae75
       size: 29
     - path: classes.csv
       hash: md5
-      md5: f626b4cfd7b801f07b0dbf69c992ad68
-      size: 962180
+      md5: 6ca0f14747e4be9a5aba9b5edda2b509
+      size: 960782
   export:
     cmd: python -m export
     deps:
