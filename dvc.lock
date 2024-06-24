@@ -64,7 +64,7 @@ stages:
           num_layers: 2
           bias: true
           emb_dim: 64
-          mlp_dim: 256
+          mlp_dim: 512
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
@@ -72,7 +72,7 @@ stages:
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
         train:
           batch_size: 512
           epochs: 100
@@ -94,16 +94,16 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: af9ded261030080ce472b7e49b39c700
-      size: 5492
+      md5: 9184d0d47b0da467c099da6967ab40e3
+      size: 5485
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: 873c11c8d4c6fdfb457b5574b659c34e
+      size: 816998
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e7ed2b494f750b933e303f61ed2e672
-      size: 849413
+      md5: fa99aa480b8d04c5be47ca71ea11758c
+      size: 1377797
   eval:
     cmd: python -m eval
     deps:
@@ -125,8 +125,8 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: 873c11c8d4c6fdfb457b5574b659c34e
+      size: 816998
     params:
       params.yaml:
         dataset:
@@ -170,7 +170,7 @@ stages:
           num_layers: 2
           bias: true
           emb_dim: 64
-          mlp_dim: 256
+          mlp_dim: 512
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
@@ -178,20 +178,20 @@ stages:
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 5261ac0b6c146ee9c5bd3415fea3e857
-      size: 699
+      md5: beaccdc7ca7ca992007ecf7138cffa41
+      size: 695
     - path: accuracy.yaml
       hash: md5
-      md5: 1c9ad4e4d17fbc6d0ac37862d7381a89
+      md5: 06da771711ba6eba2be656578d400735
       size: 29
     - path: classes.csv
       hash: md5
-      md5: f626b4cfd7b801f07b0dbf69c992ad68
-      size: 962180
+      md5: bc623fd14d16cf10b1694b58cd4a1451
+      size: 961453
   export:
     cmd: python -m export
     deps:
@@ -213,8 +213,8 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
-      size: 552806
+      md5: 873c11c8d4c6fdfb457b5574b659c34e
+      size: 816998
     params:
       params.yaml:
         dataset:
@@ -255,7 +255,7 @@ stages:
           num_layers: 2
           bias: true
           emb_dim: 64
-          mlp_dim: 256
+          mlp_dim: 512
           norm: batch-norm
           positional_encoding: binary
           dropout: 0.0
@@ -263,7 +263,7 @@ stages:
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
     outs:
     - path: outputs/inp.npy
       hash: md5
@@ -271,11 +271,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: faf6c78691efa02f266e8084305577a4
-      size: 494526
+      md5: 693b3162ce6a09bcc999b379356e89a1
+      size: 758718
     - path: outputs/out.npy
       hash: md5
-      md5: f9400b39bc59630163dc91ec30707614
+      md5: 320aa398f83fc7793837e8e80d7a877e
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
@@ -298,11 +298,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: faf6c78691efa02f266e8084305577a4
-      size: 494526
+      md5: 693b3162ce6a09bcc999b379356e89a1
+      size: 758718
     - path: outputs/out.npy
       hash: md5
-      md5: f9400b39bc59630163dc91ec30707614
+      md5: 320aa398f83fc7793837e8e80d7a877e
       size: 3200
     - path: run.sh
       hash: md5
@@ -326,7 +326,7 @@ stages:
           metrics:
             report: outputs/build/report/post_synth_resources.json
             filter: (top)
-        seed: 12
+        seed: 67
       folding.yaml:
         defaults:
           ScaledDotProductAttention_hls:
@@ -369,20 +369,20 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: e6704c839364624ed523f464b99862d1.dir
-      size: 165298340
-      nfiles: 4404
+      md5: efd51cf1fc36bc4a4698c62cf1121d50.dir
+      size: 174620426
+      nfiles: 4420
     - path: resources.yaml
       hash: md5
-      md5: 864c927ddfda848f36c0c3d31775580a
+      md5: c94489f4578db3de85e4411dada34a3a
       size: 80
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: ffe9e633724e6fe2a42072145d588770.dir
-      size: 2451342
+      md5: d20e64ebfebf83acb203d42cd2036364.dir
+      size: 3137422
       nfiles: 9
     - path: verify.py
       hash: md5
