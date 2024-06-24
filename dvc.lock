@@ -66,13 +66,13 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
-          positional_encoding: binary
+          positional_encoding: sinusoidal
           dropout: 0.0
           bits: 4
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
         train:
           batch_size: 512
           epochs: 100
@@ -94,15 +94,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: af9ded261030080ce472b7e49b39c700
-      size: 5492
+      md5: 5eaca5eeee06318c720967cbb3db52b5
+      size: 5498
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: 4d1cc8a7fb98e7dab3c27294e351ed74
       size: 552806
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 2e7ed2b494f750b933e303f61ed2e672
+      md5: 06b1e14ded2080d391deca36dcaeb7d5
       size: 849413
   eval:
     cmd: python -m eval
@@ -125,7 +125,7 @@ stages:
       size: 27767
     - path: outputs/model.pt
       hash: md5
-      md5: 9d2f22a16a7de089165b5afdafcf6304
+      md5: 4d1cc8a7fb98e7dab3c27294e351ed74
       size: 552806
     params:
       params.yaml:
@@ -172,26 +172,26 @@ stages:
           emb_dim: 64
           mlp_dim: 256
           norm: batch-norm
-          positional_encoding: binary
+          positional_encoding: sinusoidal
           dropout: 0.0
           bits: 4
           input_bits: 8
           output_bits: 8
           num_classes: 24
-        seed: 12
+        seed: 67
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 5261ac0b6c146ee9c5bd3415fea3e857
-      size: 699
+      md5: 36c3d96527718c6194fafd8d699cffbb
+      size: 698
     - path: accuracy.yaml
       hash: md5
-      md5: 1c9ad4e4d17fbc6d0ac37862d7381a89
+      md5: f6fde8cbb4fe42fb320aed51ff28a3d6
       size: 29
     - path: classes.csv
       hash: md5
-      md5: f626b4cfd7b801f07b0dbf69c992ad68
-      size: 962180
+      md5: 13cd5f643289bb4de9ac0797c4a20829
+      size: 960165
   export:
     cmd: python -m export
     deps:
