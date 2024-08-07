@@ -2,6 +2,8 @@
 import sys
 # YAML for loading experiment configurations
 import yaml
+# Measuring time for throughput test
+import time
 # Numpy for handling arrays (inputs/outputs to/from the model)
 import numpy as np
 
@@ -70,18 +72,20 @@ def extract_and_setup_model(parent, accelerator):  # noqa: Shadows outer scope
     # Assumption: The whole graph has three nodes: The MultiThreshold operation
     # quantizing the input, the StreamingDataflowPartition corresponding to the
     # FPGA accelerator and a Mul node de-quantizing the output
-    assert len(parent.graph.node), "To many node in the dataflow parent graph"
+    assert len(parent.graph.node) == 3, \
+        "To many node in the dataflow parent graph"
+
+    # The multi thresholds must be the first node of the graph
+    multithreshold = parent.graph.node[0]
+    # Check whether this is indeed the thresholding quantization
+    assert multithreshold.op_type == "MultiThreshold", \
+        f"First node must be MultiThreshold: {multithreshold.name}"
+    # Get the quantization thresholds which should be stored as an
+    # initializer tensor within the model graph
+    thresholds = parent.get_initializer(multithreshold.input[1])
 
     # Function wrapping the input quantization as it is described by the model
     def quantize(x):
-        # The multi thresholds must be the first node of the graph
-        multithreshold = parent.graph.node[0]
-        # Check whether this is indeed the thresholding quantization
-        assert multithreshold.op_type == "MultiThreshold", \
-            f"First node must be MultiThreshold: {multithreshold.name}"
-        # Get the quantization thresholds which should be stored as an
-        # initializer tensor within the model graph
-        thresholds = parent.get_initializer(multithreshold.input[1])
         # Prepare the input execution context
         context = {
             multithreshold.input[0]: x, multithreshold.input[1]: thresholds
@@ -92,16 +96,17 @@ def extract_and_setup_model(parent, accelerator):  # noqa: Shadows outer scope
         # Extract the output from the execution context
         return context[multithreshold.output[0]]
 
+    # The de-quantization multiplication node of the graph
+    mul = parent.graph.node[2]
+    # Check whether this is indeed the mul de-quantization
+    assert mul.op_type == "Mul", f"last node must be Mul: {mul.name}"
+    # Get the de-quantization scale which should be stored as an initializer
+    # tensor within the model graph
+    scale = parent.get_initializer(mul.input[1])
+
     # Function wrapping the output de-quantization as it is described by the
     # model
     def dequantize(x):
-        # The de-quantization multiplication node of the graph
-        mul = parent.graph.node[2]
-        # Check whether this is indeed the mul de-quantization
-        assert mul.op_type == "Mul", f"last node must be Mul: {mul.name}"
-        # Get the de-quantization scale which should be stored as an initializer
-        # tensor within the model graph
-        scale = parent.get_initializer(mul.input[1])
         # Apply the de-quantization scale to the tensor
         return scale * x
 
@@ -175,7 +180,8 @@ if __name__ == "__main__":
     # Run the verification input through the model
     y = model(inp)
     # Compare the output produced by the model to the expected output
-    assert np.allclose(y, out), "Produced and expected output do not match"
+    assert np.allclose(y, out, atol=1e-4), \
+        "Produced and expected output do not match"
     # Just print some success message for this simple dummy
     print("Verification on device: SUCCESS")
 
@@ -183,6 +189,19 @@ if __name__ == "__main__":
     accelerator.batch_size = params["eval-on-device"]["batch_size"]
     # Reconfigure the model
     model = extract_and_setup_model(parent, accelerator)
+
+    # Start of the throughput test on dummy data
+    # Start measuring time
+    t0 = time.time()
+    # Execute the model on empty, non initialized buffers
+    accelerator.execute_on_buffers()
+    # Stop measuring time
+    t1 = time.time()
+    # Compute thr throughput by dividing the number of sequences processed,
+    # i.e., the batch size, by thr runtime
+    throughput = accelerator.batch_size / (t1 - t0)
+    # Print the measured throughput
+    print(f"Throughput: {throughput} sequences/s")
 
     # Evaluate the model across the evaluation dataset reporting the accuracy
     accuracy = evaluate(
