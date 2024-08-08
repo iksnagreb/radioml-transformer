@@ -6,7 +6,8 @@ from brevitas.nn import (
     QuantEltwiseAdd,
     QuantIdentity,
     QuantLinear,
-    QuantReLU
+    QuantReLU,
+    QuantConv2d
 )
 
 
@@ -80,15 +81,16 @@ def act_quantizer(bits, _signed=True):
     return Quantizer
 
 
+# Transposes Sequence and Embedding dimensions
+class Transpose(torch.nn.Module):
+    # Forward pass transposing the feature map
+    def forward(self, x):  # noqa: May be static
+        # Transpose the last two dimensions of batch x seq x emb layout
+        return torch.transpose(x, dim0=-1, dim1=-2)
+
+
 # Gets the normalization layer from configuration key
 def get_norm(key, normalized_shape):
-    # Transposes Sequence and Embedding dimensions
-    class Transpose(torch.nn.Module):
-        # Forward pass transposing the feature map
-        def forward(self, x):  # noqa: May be static
-            # Transpose the last two dimensions of batch x seq x emb layout
-            return torch.transpose(x, dim0=-1, dim1=-2)
-
     # Dictionary mapping keys to supported normalization layer implementations
     norms = {
         # PyTorch default layer normalization. Needs to know the shape of the
@@ -353,7 +355,7 @@ class QuantSinusoidalPositionalEncoding(torch.nn.Module):
         pos[:, 0::2] = torch.sin(f * i)
         pos[:, 1::2] = torch.cos(f * i)
         # Move the encoding tensor to the same device as the input tensor
-        pos = pos.to(x.device, dtype=x.dtype)
+        pos = pos.to(x.device, torch.float32)
         # Add the quantized encoding to the quantized input
         return self.add(x, pos)
 
@@ -469,7 +471,7 @@ class QuantBinaryPositionalEncoding(torch.nn.Module):
             [(n & (1 << bit)) >> bit for bit in range(emb)] for n in range(seq)
         ])
         # Move the encoding tensor to the same device as the input tensor
-        pos = pos.to(x.device, dtype=x.dtype)
+        pos = pos.to(x.device, dtype=torch.float32)
         # Add the quantized encoding tp the quantized input
         #   Note: Convert encoding to bipolar representation
         return self.add(x, 2 * pos - 1)
@@ -556,6 +558,67 @@ class RadioMLTransformer(torch.nn.Module):
             return_quant_tensor=True
         )
 
+        # Inserts a dummy last dimension of size 1
+        class Unsqueeze(torch.nn.Module):
+            # Forward pass adding a dimension to the feature map
+            def forward(self, x):  # noqa: May be static
+                # Add dimension at the end to have batch x seq x emb x 1 layout
+                return torch.reshape(x, (*x.shape, 1))
+
+        # Removes the dummy last dimension of size 1
+        class Squeeze(torch.nn.Module):
+            # Forward pass removing the last dimension from the feature map
+            def forward(self, x):  # noqa: May be static
+                # Remove dimension at the end to have batch x seq x emb layout
+                return torch.reshape(x, x.shape[:-1])
+
+        # Convolution module at the input
+        self.conv = torch.nn.Sequential(
+            # Standalone quantizer at the input to avoid transposing and
+            # reshaping the quantizer
+            QuantIdentity(
+                # Quantize the input activations
+                act_quant=act_quantizer(input_bits, _signed=True),
+                # Pass quantization information on to the next layer
+                return_quant_tensor=True
+            ),
+            # Transpose to have convolution along the sequence length
+            Transpose(),
+            # Add dummy dimension to have 4d layout for convolution
+            Unsqueeze(),
+            # Quantized convolution operation
+            QuantConv2d(
+                # Inputs have embedding dimension channels
+                emb_dim,
+                # Project to the embedding dimension
+                emb_dim,
+                # Size of the convolution kernel
+                kernel_size=(5, 1),
+                # Same padding to not shrink the sequence length
+                padding=(2, 0),
+                # Enable the learned bias vector
+                bias=False,
+                # Quantize weights to the same representation as all other
+                # layers
+                weight_quant=weight_quantizer(input_bits, _signed=True),
+                # Quantize the bias to the same representation as all other
+                # layers
+                bias_quant=bias_quantizer(input_bits, _signed=True),
+                # No input quantizer as the inputs are already quantized by the
+                # preceding layer
+                input_quant=None,
+                # Not output quantization as this will be closely followed by
+                # some quantized activation function
+                output_quant=None,
+                # Pass quantization information on to the next layer
+                return_quant_tensor=True
+            ),
+            # Remove dummy dimension from 4d layout for convolution
+            Squeeze(),
+            # Transpose back to sequence-embedding layout
+            Transpose(),
+        )
+
         # Sequence of num_layers transformer encoder blocks
         self.encoder = torch.nn.Sequential(*[
             TransformerBlock(
@@ -597,6 +660,8 @@ class RadioMLTransformer(torch.nn.Module):
     # Model forward pass taking an input sequence and returning a single set of
     # class probabilities
     def forward(self, x):
+        # Apply a convolution to the input
+        x = self.conv(x)
         # Add positional encoding to the input
         x = self.pos(x)
         # Apply the classification head to the output of the sequence of

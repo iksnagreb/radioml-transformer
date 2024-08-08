@@ -58,6 +58,7 @@ from finn.transformation.streamline.reorder import (
     MoveAddPastConv,
     MoveScalarMulPastMatMul,
     MoveScalarMulPastConv,
+    MoveSqueezePastMultiThreshold
 )
 # Collapse consecutive operations of the same type
 from finn.transformation.streamline.collapse_repeated import (
@@ -68,7 +69,9 @@ from finn.transformation.streamline.collapse_repeated import (
 # FINN transformation converting ONNX nodes to hardware custom operators
 from finn.transformation.fpgadataflow.convert_to_hw_layers import (
     InferElementwiseBinaryOperation,
-    InferLookupLayer
+    InferLookupLayer,
+    InferSqueeze,
+    InferUnsqueeze
 )
 # Remove some operations without real effect
 from finn.transformation.streamline.remove import (
@@ -413,11 +416,20 @@ def step_replicate_streams(model: ModelWrapper, _):
 
 # Post-processing tidy-up squeezing dimensions and identity operators left over
 # from mapping the attention operators
-def step_tidy_up_post_attention(model: ModelWrapper, _):
+def step_tidy_up_post_attention(model: ModelWrapper, cfg: DataflowBuildConfig):
     # Remove dimensions of size 1 (single batch tensors)
     model = model.transform(Squeeze())
-    model = model.transform(RemoveIdentityTranspose())
-
+    # Get rid of transpose and reshape operations without effect after squeezing
+    model = model.transform(ComposedTransformation([
+        RemoveIdentityReshape(),
+        MoveTransposePastFork(),
+        CollapseRepeatedTranspose(),
+        RemoveIdentityTranspose(),
+        MoveSqueezePastMultiThreshold()
+    ]))
+    # Convert Squeeze and Unsqueeze operators to hardware operations
+    model = model.transform(InferSqueeze())
+    model = model.transform(InferUnsqueeze())
     # Squeezing might enable absorbing adds into thresholds once again
     model = model.transform(AbsorbAddIntoMultiThreshold())
     # If applicable, absorb the final thresholds into the attention operator
@@ -438,6 +450,15 @@ def step_tidy_up_post_attention(model: ModelWrapper, _):
     # Clean up the names for debugging
     model = model.transform(GiveUniqueNodeNames())
     model = model.transform(GiveReadableTensorNames())
+
+    # If configured, run a verification of the transformed model on some sample
+    # inputs
+    if (VerificationStepType.STREAMLINED_PYTHON in
+            cfg._resolve_verification_steps()):  # noqa
+        verify_step(
+            model, cfg, "tidied_up_post_attention_python", need_parent=False
+        )
+
     # Return the tidied up model
     return model
 
