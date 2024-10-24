@@ -12,7 +12,7 @@ import torch
 from torch.utils.data import DataLoader
 
 # The RadioML modulation classification transformer model
-from model import RadioMLTransformer
+from model import get_model
 # The RadioML modulation classification dataset
 from dataset import get_datasets
 # Seeding RNGs for reproducibility
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     # Seed all RNGs
     seed(params["seed"])
     # Create a new model instance according to the configuration
-    model = RadioMLTransformer(**params["model"])
+    model = get_model(**params["model"])
     # Pass the model and the training configuration to the training loop
     model, optimizer, log = train(
         model, dataset=params["dataset"], **params["train"]

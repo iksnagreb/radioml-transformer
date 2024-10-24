@@ -5,6 +5,10 @@ import pandas as pd
 # For loading the sample input to query the input dimensions
 import numpy as np
 
+# Range information structure for seeding the range analysis for converting
+# quantized activations to MultiThreshold
+from qonnx.util.range_analysis import RangeInfo
+
 # FINN dataflow builder
 import finn.builder.build_dataflow as build
 # FINN dataflow builder configuration
@@ -15,15 +19,13 @@ from utils import seed
 
 # Custom build steps required to streamline and convert the attention operator
 from build_steps import (
-    step_tidy_up_pre_attention,
-    step_tidy_up_post_attention,
-    step_streamline_attention,
-    step_streamline_residual,
-    step_streamline_norms,
-    step_streamline_positional,
+    prepare_graph,
+    step_streamline,
     step_convert_attention_to_hw,
     step_convert_elementwise_binary_to_hw,
     step_convert_lookup_to_hw,
+    step_convert_split_concat_to_hw,
+    step_convert_depth_wise_to_hw,
     step_replicate_streams,
     set_target_parallelization,
     set_fifo_depths,
@@ -40,9 +42,16 @@ if __name__ == "__main__":
         params = yaml.safe_load(file)
     # Seed all RNGs
     seed(params["seed"])
+
     # Extract sequence length and embedding dimension from the verification
     # sample inputs
     _, seq_len, emb_dim = np.load("outputs/inp.npy").shape
+    # Read the input value range information for the dataset from the parameters
+    # Note: Consider calibrating this on the fly from the dataset
+    input_range = tuple(np.array([params["build"]["range"]]).T)
+    # Construct the seed range information of the input tensor
+    range_info = RangeInfo(shape=(1, seq_len, emb_dim), range=input_range)
+
     # Create a configuration for building the scaled dot-product attention
     # operator to a hardware accelerator
     cfg = build_cfg.DataflowBuildConfig(
@@ -76,6 +85,8 @@ if __name__ == "__main__":
         verify_input_npy="outputs/inp.npy",
         # File with expected test outputs for verification
         verify_expected_output_npy="outputs/out.npy",
+        # Output full context dump for verification steps
+        verify_save_full_context=True,
         # Save the intermediate model graphs
         save_intermediate_models=True,
         # Avoid RTL simulation for setting the FIFO sizes
@@ -85,39 +96,27 @@ if __name__ == "__main__":
         auto_fifo_depths=False,
         # Build steps to execute
         steps=[
-            # Need to apply some tidy-up transformations before converting to
-            # the finn dialect of onnx
-            step_tidy_up_pre_attention,
-            # Convert all QONNX Quant nodes to Multithreshold nodes
-            "step_qonnx_to_finn",
-            # Tidy up the graph after converting from QONNX to FINN format
-            # Note: Triggers a verification step
-            "step_tidy_up",
-            # Positional encoding needs to be streamlined first with slightly
-            # different order of certain streamlining transformations to avoid
-            # weird rounding issue of intermediate results
-            step_streamline_positional,
-            # Custom streamlining for models containing attention operators
-            step_streamline_attention,
-            # Streamlining of the residual branches
-            step_streamline_residual,
-            # Streamline the normalization layers, i.e., transposed batch norm
-            step_streamline_norms,
-            # Another round using the default streamlining steps
-            # Note: Triggers a verification step
-            "step_streamline",
-            # New conversion of the scaled dot-product attention pattern
+            # Prepares the QONNX graph to be consumed by FINN: Cleanup, lowering
+            # and Quant to MultiThreshold conversion
+            prepare_graph(range_info=range_info),
+            # Unified exhaustive streamlining of complex model topologies
+            # including attention, residuals and splits
+            step_streamline,
+            # conversion of the scaled dot-product attention pattern to
+            # hardware, including cleanup and data layout squeezing
             step_convert_attention_to_hw,
-            # Another tidy-up step to remove unnecessary dimensions and
-            # operations after converting the attention operators to HLS
-            step_tidy_up_post_attention,
             # Convert the elementwise binary operations to hardware operators.
             # These include for example adding residual branches and positional
             # encoding
             step_convert_elementwise_binary_to_hw,
-            # Convert the Gather layer realizing the input token embedding to
-            # the FINN hardware implementation, i.e., the Lookup layer
+            # Convert Lookup layers, e.g., token embedding, to hardware custom
+            # operators
             step_convert_lookup_to_hw,
+            # Convert Split and Concat operators to hardware, e.g., splits
+            # contained in the GLU activation
+            step_convert_split_concat_to_hw,
+            # Convert depth-wise convolution MatMuls to VVUs
+            step_convert_depth_wise_to_hw,
             # Properly replicate the stream feeding the query, key and value
             # projections
             step_replicate_streams,

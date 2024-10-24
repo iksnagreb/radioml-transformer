@@ -8,7 +8,7 @@ import torch
 from brevitas.export import export_qonnx
 
 # The RadioML modulation classification transformer model
-from model import RadioMLTransformer
+from model import get_model
 # The RadioML modulation classification dataset
 from dataset import get_datasets
 # Seeding RNGs for reproducibility
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     # Seed all RNGs
     seed(params["seed"])
     # Create a new model instance according to the configuration
-    model = RadioMLTransformer(**params["model"])
+    model = get_model(**params["model"])
     # Load the trained model parameters
     model.load_state_dict(torch.load("outputs/model.pt", map_location="cpu"))
     # Prevent export issue for missing affine normalization parameters

@@ -14,6 +14,7 @@ stages:
       - ${dataset.path}
       # The model, dataset and training python scripts
       - model.py
+      - activations.py
       - dataset.py
       - train.py
     # Parameters used by this stage, changing any of these triggers reruns
@@ -52,6 +53,7 @@ stages:
       - outputs/model.pt
       # The model, dataset and evaluation python scripts
       - model.py
+      - activations.py
       - dataset.py
       - eval.py
     # Parameters used by this stage, changing any of these triggers reruns
@@ -105,6 +107,7 @@ stages:
       - outputs/model.pt
       # The model, dataset and evaluation python scripts
       - model.py
+      - activations.py
       - dataset.py
       - export.py
     # Parameters used by this stage, changing any of these triggers reruns
@@ -136,6 +139,11 @@ stages:
       - build.py
       # The custom build steps implemented in this package
       - build_steps.py
+      # Implementation details of the new custom build steps
+      - custom/apply_config.py
+      - custom/composed_transformation.py
+      - custom/quant_activation_to_multithreshold.py
+      - custom/streamline.py
       # The model export produced by the export stage: This triggers rerunning
       # this stage when the model configuration changes
       - outputs/model.onnx

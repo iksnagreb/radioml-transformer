@@ -3,6 +3,10 @@ stages:
   train:
     cmd: PARTITION=gpu bash run.sh python -m train
     deps:
+    - path: activations.py
+      hash: md5
+      md5: 28246c1ccb588272fad4f8fd0be6913f
+      size: 31671
     - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
       hash: md5
       md5: 13c38751da99a2739fdc04029a86b8e9
@@ -13,8 +17,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: 1c4759b73e41f9fde8a0c44840537838
-      size: 30655
+      md5: eba82ed5080b3dd027e4d8f1ef914ac7
+      size: 59759
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -25,8 +29,8 @@ stages:
       size: 1616
     - path: train.py
       hash: md5
-      md5: dc1c300ef1d3f80e7641ac496bfb9993
-      size: 6505
+      md5: 69487857c2eb4e3a96c5dc39c2aec6fc
+      size: 6487
     params:
       params.yaml:
         dataset:
@@ -60,6 +64,7 @@ stages:
           - -1
           - 64
         model:
+          architecture: conformer
           num_heads: 8
           num_layers: 2
           bias: true
@@ -75,7 +80,7 @@ stages:
         seed: 12
         train:
           batch_size: 512
-          epochs: 100
+          epochs: 1
           optimizer:
             algorithm: adam
             lr: 0.001
@@ -94,19 +99,23 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 9ffcf2b7ec96bc84c6708c07f31330fb
-      size: 5493
+      md5: 2a7bbb1fa37e6513f6885cd1a9da163e
+      size: 59
     - path: outputs/model.pt
       hash: md5
-      md5: 88d8198894485c8690564c86bd47eb95
-      size: 640732
+      md5: bc9eb130e314a77c73d9363737a22830
+      size: 1005070
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 6f82cacbed48639d8ebe915bf4097305
-      size: 1014917
+      md5: 65beaaf8f6aab3f44142406f5cefea35
+      size: 1540346
   eval:
     cmd: python -m eval
     deps:
+    - path: activations.py
+      hash: md5
+      md5: 28246c1ccb588272fad4f8fd0be6913f
+      size: 31671
     - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
       hash: md5
       md5: 13c38751da99a2739fdc04029a86b8e9
@@ -117,16 +126,16 @@ stages:
       size: 5248
     - path: eval.py
       hash: md5
-      md5: 1f5c91d220bb950f4682b6822d76b754
-      size: 4720
+      md5: 955012aa5dfe98ce0fca79b1e1976677
+      size: 4702
     - path: model.py
       hash: md5
-      md5: 1c4759b73e41f9fde8a0c44840537838
-      size: 30655
+      md5: eba82ed5080b3dd027e4d8f1ef914ac7
+      size: 59759
     - path: outputs/model.pt
       hash: md5
-      md5: 88d8198894485c8690564c86bd47eb95
-      size: 640732
+      md5: bc9eb130e314a77c73d9363737a22830
+      size: 1005070
     params:
       params.yaml:
         dataset:
@@ -166,6 +175,7 @@ stages:
             prefetch_factor: 4
             drop_last: false
         model:
+          architecture: conformer
           num_heads: 8
           num_layers: 2
           bias: true
@@ -182,19 +192,23 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: ff43a1a7ba869c339c63116f1344178b
-      size: 688
+      md5: 10d224c782a7d08a387c225d9eab0381
+      size: 706
     - path: accuracy.yaml
       hash: md5
-      md5: 8ba7cdcc45710d6daacd77379828cea1
-      size: 29
+      md5: 590b68526b99d0e31ae71649e8ca99e1
+      size: 30
     - path: classes.csv
       hash: md5
-      md5: da215e2f3f52f0f928906b91a7ca01e3
-      size: 965503
+      md5: 6e8914a2b17986bfaf473fcc3c28f234
+      size: 955098
   export:
     cmd: python -m export
     deps:
+    - path: activations.py
+      hash: md5
+      md5: 28246c1ccb588272fad4f8fd0be6913f
+      size: 31671
     - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
       hash: md5
       md5: 13c38751da99a2739fdc04029a86b8e9
@@ -205,16 +219,16 @@ stages:
       size: 5248
     - path: export.py
       hash: md5
-      md5: b3c309677e1e881ca22d31758c7e84e9
-      size: 4507
+      md5: 668a5732ae4e8e34d11b801be590e474
+      size: 4489
     - path: model.py
       hash: md5
-      md5: 1c4759b73e41f9fde8a0c44840537838
-      size: 30655
+      md5: eba82ed5080b3dd027e4d8f1ef914ac7
+      size: 59759
     - path: outputs/model.pt
       hash: md5
-      md5: 88d8198894485c8690564c86bd47eb95
-      size: 640732
+      md5: bc9eb130e314a77c73d9363737a22830
+      size: 1005070
     params:
       params.yaml:
         dataset:
@@ -251,6 +265,7 @@ stages:
           opset_version: 14
           do_constant_folding: true
         model:
+          architecture: conformer
           num_heads: 8
           num_layers: 2
           bias: true
@@ -271,23 +286,39 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: ed5152e2531e5f65f5a2f839186296e0
-      size: 580578
+      md5: 000c9dc2e1d200d6277699cef6c329d2
+      size: 860348
     - path: outputs/out.npy
       hash: md5
-      md5: 8122f11d40c0d0610929d70d012783fd
+      md5: 0e9891a210b1e4bff02c531aaca4d8a4
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
     deps:
     - path: build.py
       hash: md5
-      md5: a661e99a91f4b9aaf5c7dfca70091117
-      size: 8357
+      md5: f93960e5f886ec98645296541d80c9d2
+      size: 8216
     - path: build_steps.py
       hash: md5
-      md5: a245927fad6a49c049872881d77ade1b
-      size: 38529
+      md5: 6dc59c04f28c27da28f4ee7ec90fef54
+      size: 34133
+    - path: custom/apply_config.py
+      hash: md5
+      md5: 4c907c16f9d3e2f5377e36f153af40b8
+      size: 2360
+    - path: custom/composed_transformation.py
+      hash: md5
+      md5: b77d9e6dd01758cdacc6599b54324d50
+      size: 3118
+    - path: custom/quant_activation_to_multithreshold.py
+      hash: md5
+      md5: f9930cad7776065f94757ced05944b0f
+      size: 26546
+    - path: custom/streamline.py
+      hash: md5
+      md5: 42f052b4af427f8ac7b03df019ac0dc8
+      size: 15088
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -298,11 +329,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: ed5152e2531e5f65f5a2f839186296e0
-      size: 580578
+      md5: 000c9dc2e1d200d6277699cef6c329d2
+      size: 860348
     - path: outputs/out.npy
       hash: md5
-      md5: 8122f11d40c0d0610929d70d012783fd
+      md5: 0e9891a210b1e4bff02c531aaca4d8a4
       size: 3200
     - path: run.sh
       hash: md5
@@ -311,6 +342,9 @@ stages:
     params:
       params.yaml:
         build:
+          range:
+          - -100
+          - 100
           finn:
             output_dir: outputs/build
             stitched_ip_gen_dcp: false
@@ -369,21 +403,21 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: bb41df7360e16b218bedc557dad03b08.dir
-      size: 174525205
-      nfiles: 4685
+      md5: 89babf520a0d1567c2a42a5244f35ea7.dir
+      size: 231783074
+      nfiles: 5476
     - path: resources.yaml
       hash: md5
-      md5: cf5e32d8ab6619d00baaef8a7f5c0d2b
+      md5: ce240dbd3e90052e1b8aed8dac59b5ce
       size: 80
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: 4ce6d655ffe6cef26de9538179cc0033.dir
-      size: 3080744
-      nfiles: 10
+      md5: ab19ade4d6c52b6e4c9f8d102cd18a7d.dir
+      size: 33382070
+      nfiles: 7
     - path: verify.py
       hash: md5
       md5: 69ba4a5769ec79d36a6d274fcfa77c6e

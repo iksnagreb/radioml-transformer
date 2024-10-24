@@ -6,6 +6,8 @@ tag: ""
 seed: 12
 # Model configuration section
 model:
+  # Key for selecting the model architecture
+  architecture: conformer
   # Number of attention heads
   num_heads: 8
   # Number of attention block "layers"
@@ -58,7 +60,7 @@ train:
   # Batch size for training
   batch_size: 512
   # Number of training epochs to run
-  epochs: 100
+  epochs: 1
   # Optimizer configuration
   optimizer:
     # Name of the optimization algorithm to use
@@ -109,6 +111,11 @@ export:
   do_constant_folding: true
 # FPGA dataflow accelerator build configuration
 build:
+  # Value range to consider for inputs from the dataset
+  # Note: For Quant to MultiThreshold conversion it should not be an issue if
+  # this is larger than the actual range of the data (though this might increase
+  # the conversion runtime)
+  range: [ -100, +100 ]
   # FINN compiler configurations
   finn:
     # Directory to store the build outputs
