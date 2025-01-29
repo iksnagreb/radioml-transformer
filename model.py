@@ -9,7 +9,7 @@ from brevitas.nn import (
     QuantConv2d
 )
 # Custom, quantized activation functions
-from activations import QuantReLU, QuantSiLU, QuantGLU  # noqa: Maybe unsued
+from activations import QuantReLU, QuantSiLU, QuantGLU  # noqa: Maybe unused
 
 
 # Derives a weight quantizer from the brevitas bases leaving bit-width and
@@ -271,11 +271,14 @@ class TransformerBlock(torch.nn.Module):
                 # quantize the bias
                 return_quant_tensor=True
             ),
-            # Use the ReLU activation function instead of the more commonly used
-            # GELU, as the latter is not mapped easily to hardware with FINN
+            # Quantized activation function: Currently ReLU but should be made
+            # configurable to select for example SiLU and GELU as well
             QuantReLU(
-                # Note: ReLU must be quantized to unsigned representation
-                act_quant=act_quantizer(bits, _signed=False),
+                # Output bit-width of the quantizer inside the activation
+                # function
+                # Note: Depending on the activation function there might be
+                # multiple quantizers inside
+                bits=bits,
                 # Return the quantization parameters so the next layer can
                 # quantize the bias
                 return_quant_tensor=True
@@ -704,8 +707,7 @@ class ConformerBlock(torch.nn.Module):
                 # Pass quantization information on to the next layer.
                 return_quant_tensor=True
             ),
-            # TODO: No activation here?
-            # TODO: Dropout here?
+            # Remove dummy dimension from 4d layout for convolution
             # Remove dummy dimension from 4d layout for convolution
             Squeeze(),
             # Transpose back to sequence-embedding layout

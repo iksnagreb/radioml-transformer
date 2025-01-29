@@ -176,7 +176,8 @@ def prepare_graph(range_info: RangeInfo):
             # Remove unnecessary shape and layout transformations
             RemoveIdentityReshape(),
             RemoveIdentityTranspose(),
-            # Redo shape and datatype annotations after removing nodes and tensors
+            # Redo shape and datatype annotations after removing nodes and
+            # tensors
             InferShapes(),
             InferDataTypes(),
         ]))

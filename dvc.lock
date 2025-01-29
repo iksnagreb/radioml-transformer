@@ -17,8 +17,8 @@ stages:
       size: 5248
     - path: model.py
       hash: md5
-      md5: eba82ed5080b3dd027e4d8f1ef914ac7
-      size: 59759
+      md5: 3e64645795c7578b24406f9694c48aaa
+      size: 59858
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -99,15 +99,15 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: 2a7bbb1fa37e6513f6885cd1a9da163e
-      size: 59
+      md5: fc00798d0a07b84455e5991d367782c0
+      size: 60
     - path: outputs/model.pt
       hash: md5
-      md5: bc9eb130e314a77c73d9363737a22830
+      md5: cb6be1dba29036c615ae732480014359
       size: 1005070
     - path: outputs/optimizer.pt
       hash: md5
-      md5: 65beaaf8f6aab3f44142406f5cefea35
+      md5: d11bdb07bfafffef139125923409d21a
       size: 1540346
   eval:
     cmd: python -m eval
@@ -130,11 +130,11 @@ stages:
       size: 4702
     - path: model.py
       hash: md5
-      md5: eba82ed5080b3dd027e4d8f1ef914ac7
-      size: 59759
+      md5: 3e64645795c7578b24406f9694c48aaa
+      size: 59858
     - path: outputs/model.pt
       hash: md5
-      md5: bc9eb130e314a77c73d9363737a22830
+      md5: cb6be1dba29036c615ae732480014359
       size: 1005070
     params:
       params.yaml:
@@ -192,16 +192,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 10d224c782a7d08a387c225d9eab0381
-      size: 706
+      md5: 1530b5dfa13726958698f652081ede8f
+      size: 708
     - path: accuracy.yaml
       hash: md5
-      md5: 590b68526b99d0e31ae71649e8ca99e1
-      size: 30
+      md5: 7c2ddce608c36a1679d8772ee5055ade
+      size: 29
     - path: classes.csv
       hash: md5
-      md5: 6e8914a2b17986bfaf473fcc3c28f234
-      size: 955098
+      md5: d8c56143e2ffe7e0167dcee49733dba2
+      size: 944674
   export:
     cmd: python -m export
     deps:
@@ -223,11 +223,11 @@ stages:
       size: 4489
     - path: model.py
       hash: md5
-      md5: eba82ed5080b3dd027e4d8f1ef914ac7
-      size: 59759
+      md5: 3e64645795c7578b24406f9694c48aaa
+      size: 59858
     - path: outputs/model.pt
       hash: md5
-      md5: bc9eb130e314a77c73d9363737a22830
+      md5: cb6be1dba29036c615ae732480014359
       size: 1005070
     params:
       params.yaml:
@@ -286,11 +286,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 000c9dc2e1d200d6277699cef6c329d2
+      md5: f73ca2351e4a3f1152dcd387a7c1405c
       size: 860348
     - path: outputs/out.npy
       hash: md5
-      md5: 0e9891a210b1e4bff02c531aaca4d8a4
+      md5: a9f1ab036efa219b8c87ede21877ff0b
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
@@ -301,8 +301,8 @@ stages:
       size: 8216
     - path: build_steps.py
       hash: md5
-      md5: 6dc59c04f28c27da28f4ee7ec90fef54
-      size: 34133
+      md5: 8757b587b2c80d326a2173924528be43
+      size: 34147
     - path: custom/apply_config.py
       hash: md5
       md5: 4c907c16f9d3e2f5377e36f153af40b8
@@ -317,8 +317,8 @@ stages:
       size: 26546
     - path: custom/streamline.py
       hash: md5
-      md5: 42f052b4af427f8ac7b03df019ac0dc8
-      size: 15088
+      md5: 60f6f60ed63b8e80f47a5012ab80006b
+      size: 27155
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -329,11 +329,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: 000c9dc2e1d200d6277699cef6c329d2
+      md5: f73ca2351e4a3f1152dcd387a7c1405c
       size: 860348
     - path: outputs/out.npy
       hash: md5
-      md5: 0e9891a210b1e4bff02c531aaca4d8a4
+      md5: a9f1ab036efa219b8c87ede21877ff0b
       size: 3200
     - path: run.sh
       hash: md5
@@ -403,20 +403,20 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 89babf520a0d1567c2a42a5244f35ea7.dir
-      size: 231783074
-      nfiles: 5476
+      md5: 7036f598381e502c6a80c62bc0eb4d95.dir
+      size: 231785675
+      nfiles: 5460
     - path: resources.yaml
       hash: md5
-      md5: ce240dbd3e90052e1b8aed8dac59b5ce
+      md5: 6069af38377460796c17e21f1779f6f5
       size: 80
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: ab19ade4d6c52b6e4c9f8d102cd18a7d.dir
-      size: 33382070
+      md5: 4c120dd3d580a61e5c5a017939ed1a31.dir
+      size: 33386888
       nfiles: 7
     - path: verify.py
       hash: md5
