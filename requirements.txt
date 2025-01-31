@@ -1,6 +1,6 @@
 git+https://github.com/iksnagreb/brevitas.git@34c350afde0a69b7a39b13eb4748b979bdae1eff
-git+https://github.com/iksnagreb/qonnx.git@d977258f39dea9df0a9f28459506a98c763fa4ce
-git+https://github.com/eki-project/finn-plus.git@460b088f067fdbe74a9f088609d1c0039b5cad66
+git+https://github.com/iksnagreb/qonnx.git@b6a23ba22dd25d46b462145e382c04237c9a6952
+git+https://github.com/eki-project/finn-plus.git@a2e6a2f562a380463f6fb03e41eba63e1597e66f
 numpy~=1.26.4
 onnxoptimizer~=0.3.13
 onnxruntime~=1.17.3
