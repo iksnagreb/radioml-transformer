@@ -54,7 +54,8 @@ from finn.transformation.streamline.reorder import (
     MoveTransposePastSplit,
     MoveTransposePastJoinConcat,
     MoveSqueezePastMultiThreshold,
-    MoveSqueezePastMatMul
+    MoveSqueezePastMatMul,
+    MoveMulPastAdd
 )
 # FINN streamlining transformations absorbing tensors/nodes into others
 from finn.transformation.streamline.absorb import (
@@ -143,7 +144,8 @@ from finn.util.test import execute_parent
 from qonnx.transformation.composed import ComposedTransformation
 
 # Custom st of streamlining transformations
-from custom.streamline import Streamline, MoveMulPastAdd
+from finn.transformation.streamline.streamline_plus import \
+    StreamlinePlus as Streamline
 
 
 # Prepares the graph to be consumed by FINN:

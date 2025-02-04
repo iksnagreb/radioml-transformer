@@ -301,16 +301,12 @@ stages:
       size: 8216
     - path: build_steps.py
       hash: md5
-      md5: 994908a21fc2d79f96724425ef2b91e1
-      size: 33344
+      md5: 4025dcf779731c43d34e314aa9f3431f
+      size: 33401
     - path: custom/apply_config.py
       hash: md5
       md5: 4c907c16f9d3e2f5377e36f153af40b8
       size: 2360
-    - path: custom/streamline.py
-      hash: md5
-      md5: fac23dc385b18e7beb72113633ecdd58
-      size: 32899
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -395,8 +391,8 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: 1e6cc44bfec10d0b7d578d0a7680632f.dir
-      size: 172323104
+      md5: 7a4b827bf1e4f2c20ee101f646042110.dir
+      size: 172309969
       nfiles: 4372
     - path: resources.yaml
       hash: md5
