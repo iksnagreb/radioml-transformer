@@ -139,13 +139,9 @@ from finn.transformation.fpgadataflow.prepare_rtlsim import PrepareRTLSim
 # Execute onnx model graphs from the dataflow parent for verification
 from finn.util.test import execute_parent
 
-# Custom transformation for exhaustively composing transformations
-from custom.composed_transformation import ComposedTransformation
-# # Custom conversion from Quant to MultiThreshold
-# TODO: Enable once fixed...
-# from custom.quant_activation_to_multithreshold import (
-#     QuantActivationToMultiThreshold
-# )
+# Transformation for exhaustively composing transformations
+from qonnx.transformation.composed import ComposedTransformation
+
 # Custom st of streamlining transformations
 from custom.streamline import Streamline, MoveMulPastAdd
 
@@ -216,18 +212,6 @@ def prepare_graph(range_info: RangeInfo):
                 cfg._resolve_verification_steps()):  # noqa
             verify_step(
                 model, cfg, "lowered_python", need_parent=False
-            )
-        # Apply the quantizer to MultiThreshold conversion
-        # Note: This is exhaustive as well as single .transform reapplies as
-        # long as possible.
-        # TODO: Enable once fixed...
-        # model = model.transform(QuantActivationToMultiThreshold(range_info))
-        # If configured, run a verification of the transformed model on some
-        # sample inputs
-        if (VerificationStepType.QONNX_TO_FINN_PYTHON in
-                cfg._resolve_verification_steps()):  # noqa
-            verify_step(
-                model, cfg, "quant_to_thresholds_ra_python", need_parent=False
             )
         # Apply the standard QONNX to FINN conversion step to convert the
         # remaining quantizers not yet covered by the new range analysis based

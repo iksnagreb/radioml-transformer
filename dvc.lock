@@ -64,7 +64,7 @@ stages:
           - -1
           - 64
         model:
-          architecture: conformer
+          architecture: transformer
           num_heads: 8
           num_layers: 2
           bias: true
@@ -99,16 +99,16 @@ stages:
     outs:
     - path: loss.yaml
       hash: md5
-      md5: fc00798d0a07b84455e5991d367782c0
-      size: 60
+      md5: fc49720e8ceab803883ad653f1df59cf
+      size: 61
     - path: outputs/model.pt
       hash: md5
-      md5: cb6be1dba29036c615ae732480014359
-      size: 1005070
+      md5: a4509d1d37b49ffcda92c93f899fbf75
+      size: 564051
     - path: outputs/optimizer.pt
       hash: md5
-      md5: d11bdb07bfafffef139125923409d21a
-      size: 1540346
+      md5: 8b7e969e3876352e0cca8a54d256a8b4
+      size: 831626
   eval:
     cmd: python -m eval
     deps:
@@ -134,8 +134,8 @@ stages:
       size: 59858
     - path: outputs/model.pt
       hash: md5
-      md5: cb6be1dba29036c615ae732480014359
-      size: 1005070
+      md5: a4509d1d37b49ffcda92c93f899fbf75
+      size: 564051
     params:
       params.yaml:
         dataset:
@@ -175,7 +175,7 @@ stages:
             prefetch_factor: 4
             drop_last: false
         model:
-          architecture: conformer
+          architecture: transformer
           num_heads: 8
           num_layers: 2
           bias: true
@@ -192,16 +192,16 @@ stages:
     outs:
     - path: accuracy-per-snr.yaml
       hash: md5
-      md5: 1530b5dfa13726958698f652081ede8f
-      size: 708
+      md5: 8cea1d11112f4b1d14d16d6513bc1ea2
+      size: 711
     - path: accuracy.yaml
       hash: md5
-      md5: 7c2ddce608c36a1679d8772ee5055ade
+      md5: a9fa66ff7c5ad0c4b6fbb5bdb3b2367e
       size: 29
     - path: classes.csv
       hash: md5
-      md5: d8c56143e2ffe7e0167dcee49733dba2
-      size: 944674
+      md5: 7ad8bbcbaf83d45bf3d78d3a86253385
+      size: 953313
   export:
     cmd: python -m export
     deps:
@@ -227,8 +227,8 @@ stages:
       size: 59858
     - path: outputs/model.pt
       hash: md5
-      md5: cb6be1dba29036c615ae732480014359
-      size: 1005070
+      md5: a4509d1d37b49ffcda92c93f899fbf75
+      size: 564051
     params:
       params.yaml:
         dataset:
@@ -265,7 +265,7 @@ stages:
           opset_version: 14
           do_constant_folding: true
         model:
-          architecture: conformer
+          architecture: transformer
           num_heads: 8
           num_layers: 2
           bias: true
@@ -286,11 +286,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: f73ca2351e4a3f1152dcd387a7c1405c
-      size: 860348
+      md5: 4f3408e3aab19ddbbf8f44cf585834c9
+      size: 474429
     - path: outputs/out.npy
       hash: md5
-      md5: a9f1ab036efa219b8c87ede21877ff0b
+      md5: aaf6ad0f2da37ce77f3faf267db6cc9c
       size: 3200
   build:
     cmd: bash run.sh '$FINN/run-docker.sh build_custom $(pwd)'
@@ -301,24 +301,16 @@ stages:
       size: 8216
     - path: build_steps.py
       hash: md5
-      md5: 8757b587b2c80d326a2173924528be43
-      size: 34147
+      md5: 994908a21fc2d79f96724425ef2b91e1
+      size: 33344
     - path: custom/apply_config.py
       hash: md5
       md5: 4c907c16f9d3e2f5377e36f153af40b8
       size: 2360
-    - path: custom/composed_transformation.py
-      hash: md5
-      md5: b77d9e6dd01758cdacc6599b54324d50
-      size: 3118
-    - path: custom/quant_activation_to_multithreshold.py
-      hash: md5
-      md5: f9930cad7776065f94757ced05944b0f
-      size: 26546
     - path: custom/streamline.py
       hash: md5
-      md5: 60f6f60ed63b8e80f47a5012ab80006b
-      size: 27155
+      md5: fac23dc385b18e7beb72113633ecdd58
+      size: 32899
     - path: noctua.sh
       hash: md5
       md5: f3e8cc342b63cddcd2e07bfe63f6518c
@@ -329,11 +321,11 @@ stages:
       size: 8320
     - path: outputs/model.onnx
       hash: md5
-      md5: f73ca2351e4a3f1152dcd387a7c1405c
-      size: 860348
+      md5: 4f3408e3aab19ddbbf8f44cf585834c9
+      size: 474429
     - path: outputs/out.npy
       hash: md5
-      md5: a9f1ab036efa219b8c87ede21877ff0b
+      md5: aaf6ad0f2da37ce77f3faf267db6cc9c
       size: 3200
     - path: run.sh
       hash: md5
@@ -403,21 +395,21 @@ stages:
     outs:
     - path: outputs/build/
       hash: md5
-      md5: c24fc2b37d9303f089d5651d292c6a32.dir
-      size: 229721129
-      nfiles: 5460
+      md5: 1e6cc44bfec10d0b7d578d0a7680632f.dir
+      size: 172323104
+      nfiles: 4372
     - path: resources.yaml
       hash: md5
-      md5: 6069af38377460796c17e21f1779f6f5
+      md5: 697a82cfcfd7a3d8d8dc520c746a5632
       size: 80
   verify:
     cmd: python -m verify
     deps:
     - path: outputs/build/verification_output/
       hash: md5
-      md5: 0c3b8c4cd71092c2207441e1801799c1.dir
-      size: 33386888
-      nfiles: 7
+      md5: 922a2d51b21b119a317ae970d5da2032.dir
+      size: 13474982
+      nfiles: 6
     - path: verify.py
       hash: md5
       md5: 69ba4a5769ec79d36a6d274fcfa77c6e

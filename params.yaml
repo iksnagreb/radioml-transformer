@@ -7,7 +7,7 @@ seed: 12
 # Model configuration section
 model:
   # Key for selecting the model architecture
-  architecture: conformer
+  architecture: transformer
   # Number of attention heads
   num_heads: 8
   # Number of attention block "layers"

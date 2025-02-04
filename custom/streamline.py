@@ -81,8 +81,8 @@ from finn.transformation.streamline.remove import (
     RemoveIdentityReshape
 )
 
-# Custom transformation for exhaustively composing transformations
-from .composed_transformation import ComposedTransformation
+# Transformation for exhaustively composing transformations
+from qonnx.transformation.composed import ComposedTransformation
 
 
 # Moves elementwise additions past MatMul operations: Applicable if each
@@ -370,10 +370,124 @@ class MoveScalarLinearPastFork(Transformation):
                 if len(node.output) > 1:
                     # Softly skip this node
                     continue
+                # Left and right side of the operation
+                (inp,), (const,) = group_inputs_by_category(node, model)
                 # Test whether the node initializer is a scalar...
-                if not is_scalar(model.get_initializer(node.input[1])):
+                if not is_scalar(model.get_initializer(const)):
                     # Softly skip this node
                     continue
+                # We need to insert a replica of this operation in front of each
+                # consumer node
+                for consumer in model.find_direct_successors(node):
+                    # Create an exact replica of this operator
+                    copy = deepcopy(node)
+                    # Insert a new unique tensor connecting the output of the
+                    # copy to the consumer
+                    copy.output[0] = model.make_new_valueinfo_name()
+                    # The original node might be connecting to multiple inputs
+                    # of the consumer...
+                    for idx, inp in enumerate(consumer.input):
+                        # Find each instance of connection from original node
+                        if inp == node.output[0]:
+                            # Rewire to connect to the replica
+                            consumer.input[idx] = copy.output[0]
+                    # Insert the new replica node into the graph
+                    graph.node.insert(index + 1, copy)
+                # Remove the original node from the graph
+                graph.node.remove(node)
+        # Redo datatype and shape annotations
+        model = model.transform(InferShapes())
+        model = model.transform(InferDataTypes())
+        # Return the transformed model and indicate whether the transformation
+        # needs to be applied again
+        return model, graph_modified
+
+
+# Moves scalar linear channel-wise operations past fork nodes, applies to Add,
+# Mul, Sub, Div, etc.
+class MoveChannelwiseLinearPastFork(Transformation):
+    # Applies the transform to a whole model graph
+    def apply(self, model: ModelWrapper):  # noqa
+        # Get the model graph out of the model wrapper object
+        graph = model.graph
+        # Keep track of whether the graph has been modified
+        graph_modified = False
+        # Iterate all nodes in the graph keeping track of the index
+        for index, node in enumerate(graph.node):
+            # Applies to Mul-like and Add-like operation types
+            if node.op_type in {"Add", "Sub", "Mul", "Div"}:
+                # Only handles non-joining forks for now
+                if not model.is_fork_node(node) or model.is_join_node(node):
+                    # Softly skip this node
+                    continue
+                # Only handles one forking output for now
+                if len(node.output) > 1:
+                    # Softly skip this node
+                    continue
+
+                # Left and right side of the operation
+                (inp,), (const,) = group_inputs_by_category(node, model)
+
+                # First try to consider the tensor layout of the input for
+                # determining the number of input channels
+                layout = model.get_tensor_layout(inp)
+                # If there is no layout annotation, guess based on rank of the
+                # tensor
+                if layout is None:
+                    # Maps tensor rank to layout annotation
+                    rank_to_layout = {
+                        0: None, 1: "C", 2: "NC", 3: "NWC", 4: "NCHW"
+                    }
+                    # Lookup the layout required by this input shape
+                    layout = rank_to_layout[
+                        len(model.get_tensor_shape(inp))
+                    ]
+                # If there is a layout annotation, use this to determine the
+                # index of the channel dimension
+                if layout is not None and "C" in layout:
+                    # Lookup the index in list
+                    cdim = layout.index("C")
+                # If no layout has been annotated or there is no channel
+                # dimension, fall back to the previous default assumption
+                else:
+                    # Assume the channels to be in axis 1
+                    cdim = 1
+                    # Issue a warning to the user, so they are aware of this
+                    warnings.warn(
+                        f"{self.__class__.__name__}: No layout for {inp}:"
+                        f" Assuming channel dimension at index {cdim}"
+                    )
+
+                # Tests whether two shapes can be broadcast according to NumPy
+                # semantics
+                def can_broadcast_to(lhs, rhs):
+                    # Broadcasting might raise an exception
+                    try:
+                        # Try broadcasting the shapes
+                        if np.broadcast_to(np.zeros(lhs), rhs).shape == rhs:
+                            # These tensors can be broadcast, preserving the
+                            # left-hand-side shape
+                            return True
+                        # These tensors cannot be broadcast
+                        return False
+                    # Failing to broadcast the tensors raises ValueError
+                    except ValueError:
+                        # These tensors cannot be broadcast
+                        return False
+
+                # Per-tensor or per-channel means we have some parameter tensor
+                # which can be broadcast to the channel dimension of the output
+                if not can_broadcast_to(
+                        model.get_tensor_shape(const),
+                        (model.get_tensor_shape(node.output[0])[cdim],)
+                ):
+                    # Issue a warning to the user, so they are aware of this
+                    warnings.warn(
+                        f"{self.__class__.__name__}: Not channel-wise {const}:"
+                    )
+                    # Softly skip this node
+                    continue
+
                 # We need to insert a replica of this operation in front of each
                 # consumer node
                 for consumer in model.find_direct_successors(node):
@@ -521,7 +635,7 @@ def Streamline():  # noqa: Uppercase
             # connections, i.e., this corresponds to the original residual
             # addition, i.e., y = f(x) + x
             MoveLinearPastEltwiseAdd(),
-            MoveScalarLinearPastFork(),
+            MoveChannelwiseLinearPastFork(),
             MoveScalarLinearPastInvariants(),
             MoveMulPastFork(),
             MoveMulPastJoinAdd(),
