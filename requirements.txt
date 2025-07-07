@@ -1,14 +1,14 @@
 brevitas @ git+https://github.com/iksnagreb/brevitas.git@003f9f4070c20639790c7b406a28612a089fc502
-qonnx @ git+https://github.com/iksnagreb/qonnx.git@4b731dbf3120316f11ae1c4b298ceaf9e73f21b3
-finn @ git+https://github.com/eki-project/finn-plus.git@affcbb12a57caa96fb00f0ec9bd6f696279752c2
-numpy~=1.26.4
+qonnx @ git+https://github.com/iksnagreb/qonnx.git@b7f1b54c7ba2a35cc8517c04c04d4148ba25cced
+finn-plus==1.0.0
+numpy~=1.24.1
 onnxoptimizer~=0.3.13
-onnxruntime~=1.17.3
+onnxruntime~=1.18.1
 onnx~=1.17.0
-PyYAML~=6.0.2
-torch~=2.5.0
-pandas~=2.2.3
-dvc[webdav]~=3.55.2
-tqdm~=4.66.5
+PyYAML~=6.0.1
+torch~=2.6.0
+pandas~=1.5.3
+dvc[webdav]~=3.59.1
+tqdm~=4.64.1
 h5py~=3.12.1
-scikit-learn~=1.5.2
+scikit-learn~=1.2.1
